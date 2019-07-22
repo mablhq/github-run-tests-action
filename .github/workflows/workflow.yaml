@@ -1,0 +1,13 @@
+on: [push]
+
+name: mabl
+
+jobs:
+
+  jobs:
+    name: Mabl Test
+    runs-on: ubuntu-latest
+    actions:
+    - name: create mabl deployment event
+      uses: ../../deploy
+
