@@ -38,6 +38,6 @@ if [[ -z ${DEPLOYMENT_EVENT_ID} ]]; then
     exit 20
 else
     echo "Deployment event notification successful"
-    echo "${DEPLOYMENT_EVENT_ID}" > "${HOME}/${GITHUB_ACTION}/deployment_event_id"
+    echo "${DEPLOYMENT_EVENT_ID}" > "${HOME}/mabl/deployment_event_id"
 fi
 
