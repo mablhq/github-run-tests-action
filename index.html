@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+        Simple Login
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="span8 offset2 ">
+            <form id="site-login-form" method="post" action="javascript:;">
+                <input type="hidden" name="csrfmiddlewaretoken" value="j5F2oaXuRtAeFfWTZqdk0UuZzjJwIUoS">
+                <fieldset>
+                    <div class="well">
+                        <div class="control-group">
+                            <label class="control-label" for="username">Username</label>
+
+                            <div class="controls-row">
+                                <input id="username" maxlength="255" name="username" type="email" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="password">Password</label>
+
+                            <div class="controls-row">
+                                <input id="password" name="password" type="password" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a onClick="javascript:;" name="submit">Submit</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
