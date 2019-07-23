@@ -10,6 +10,7 @@ jobs:
     actions:
     - name: create mabl deployment event
       uses: ./deploy/
-      secrets:
-      - "MABL_API_KEY"
+      with:
+        secrets:
+        - "MABL_API_KEY"
 
