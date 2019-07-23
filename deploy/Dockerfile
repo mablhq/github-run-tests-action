@@ -11,7 +11,7 @@ LABEL "com.github.actions.color"="yellow"
 
 COPY LICENSE README.md /
 
-COPY submit_deploy_event.sh /
+COPY submit_deploy_event.sh .
 
 RUN apt-get update && \
 	apt-get install curl -y && \
