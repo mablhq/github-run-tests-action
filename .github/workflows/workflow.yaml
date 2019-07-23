@@ -12,3 +12,4 @@ jobs:
       uses: ./deploy/
       with:
         secrets: MABL_API_KEY
+        MABL_API_KEY: try_this
