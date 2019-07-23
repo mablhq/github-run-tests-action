@@ -9,5 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     actions:
     - name: create mabl deployment event
-      uses: ../../deploy
+      uses: ./deploy/
 
