@@ -3,6 +3,8 @@ set -e
 
 echo "${GITHUB_SHA}"
 echo "${MABL_API_KEY}"
+echo "${MABL_ECHO}"
+echo "${version}"
 
 EVENT_TIME="${CI_TIMESTAMP}"
 if [[ -z "${EVENT_TIME}" ]]; then
