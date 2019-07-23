@@ -11,10 +11,10 @@ LABEL "com.github.actions.color"="yellow"
 
 COPY LICENSE README.md /
 
-COPY submit_deploy_event.sh .
+COPY submit_deploy_event.sh /
 
 RUN apt-get update && \
 	apt-get install curl -y && \
 	apt-get clean -y
 
-ENTRYPOINT ["submit_deploy_event.sh"]
+ENTRYPOINT ["/submit_deploy_event.sh"]
