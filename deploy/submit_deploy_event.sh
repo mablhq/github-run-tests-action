@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+echo "${GITHUB_SHA}"
 echo "${MABL_API_KEY}"
 
 EVENT_TIME="${CI_TIMESTAMP}"
