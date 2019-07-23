@@ -6,12 +6,12 @@ if [[ -z "${EVENT_TIME}" ]]; then
     EVENT_TIME="$(date +%s)000"
 fi
 
-if [[ -n "${MABL_API_KEY}" ]]; then
-    echo "No mabl API key [${MABL_API_KEY}] specified"
+if [[ -z "${MABL_API_KEY}" ]]; then
+    echo "No mabl API key specified"
     exit 1
 fi
 
-if [[ -n "${MABL_API_HOST}" ]]; then
+if [[ -z "${MABL_API_HOST}" ]]; ithen
     MABL_API_HOST="api.mabl.com"
 fi
 
@@ -28,7 +28,7 @@ DEPLOYMENT_JSON="${DEPLOYMENT_JSON} }"
 TARGET_URL="https://${MABL_API_HOST}/events/deployment"
 
 echo "Sending deployment to mabl with @ ${TARGET_URL}..."
-DEPLOYMENT_EVENT_ID=$(curl -s ${TARGET_URL} \
+DEPLOYMENT_EVENT_ID=$(curl -v ${TARGET_URL} \
 -u "key:${MABL_API_KEY}" \
 -H "Content-Type:application/json" \
 -d "${DEPLOYMENT_JSON}" | jq '.id' -r )
