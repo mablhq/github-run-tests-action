@@ -11,4 +11,4 @@ jobs:
     - name: create mabl deployment event
       uses: ./deploy/
       with: 
-        env: MABL_API_KEY=${{ secrets.MABL_API_KEY }}
+        env: MABL_API_KEY='${{ secrets.MABL_API_KEY }}'
