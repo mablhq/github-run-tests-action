@@ -17,4 +17,4 @@ RUN apt-get update && \
 	apt-get install curl -y && \
 	apt-get clean -y
 
-ETRYPOINT ["submit_deploy_event.sh"]
+ENTRYPOINT ["submit_deploy_event.sh"]
