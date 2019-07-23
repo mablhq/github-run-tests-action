@@ -15,6 +15,7 @@ COPY submit_deploy_event.sh /
 
 RUN apt-get update && \
 	apt-get install curl -y && \
-	apt-get clean -y
+	apt-get install jq -y && \
+        apt-get clean -y
 
 ENTRYPOINT ["/submit_deploy_event.sh"]
