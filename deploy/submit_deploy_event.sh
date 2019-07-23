@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-MABL_API_KEY=${{ secrets.MABL_API_KEY }}
+echo "${MABL_API_KEY}"
 
 EVENT_TIME="${CI_TIMESTAMP}"
 if [[ -z "${EVENT_TIME}" ]]; then
