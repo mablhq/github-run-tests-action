@@ -1,0 +1,15 @@
+on: [push]
+
+name: mabl
+
+jobs:
+
+  jobs:
+    name: Mabl Test
+    runs-on: ubuntu-latest
+    actions:
+    - name: create mabl deployment event
+      uses: ./deploy/
+      env: 
+        MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+        APPLICATION_ID: Muz724GPCsXetTR11lqr0w-a
