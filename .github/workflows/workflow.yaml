@@ -12,4 +12,5 @@ jobs:
       uses: ./deploy/
       env: 
         MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-        APPLICATION_ID: Muz724GPCsXetTR11lqr0w-a
+        APPLICATION_ID: l-j3VqIO6lLLOOEoFTPSxA-a
+        ENVIRONMENT_ID: rtb4kWD5LuTr2KxaHvwfaA-e
