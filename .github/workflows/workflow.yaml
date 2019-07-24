@@ -1,4 +1,4 @@
-on: [deploy]
+on: [deployment]
 
 name: mabl
 
