@@ -16,7 +16,7 @@ if [[ -z "${MABL_API_KEY}" ]]; then
     exit 1
 fi
 
-if [[ -z "${MABL_API_HOST}" ]]; ithen
+if [[ -z "${MABL_API_HOST}" ]]; then
     MABL_API_HOST="api.mabl.com"
 fi
 
