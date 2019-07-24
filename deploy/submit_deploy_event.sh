@@ -7,7 +7,7 @@ if [[ -z "${EVENT_TIME}" ]]; then
 fi
 
 if [[ -z "${MABL_API_KEY}" ]]; then
-    echo "No mabl API key specified"
+    echo "No MABL_API_KEY provided"
     exit 1
 fi
 
@@ -28,21 +28,17 @@ DEPLOYMENT_JSON="${DEPLOYMENT_JSON} }"
 TARGET_URL="https://${MABL_API_HOST}/events/deployment"
 
 echo "Sending deployment to mabl with @ ${TARGET_URL}..."
-response=$(curl -v ${TARGET_URL} \
+response=$(curl -s ${TARGET_URL} \
 -u "key:${MABL_API_KEY}" \
 -H "Content-Type:application/json" \
 -d "${DEPLOYMENT_JSON}")
 
-echo "mabl deployment call response: ${response}"
-
 DEPLOYMENT_EVENT_ID=$(echo "${response}" | jq '.id' -r)
 status_code=$(echo "${response}" | jq '.code' -r)
 
-echo "${DEPLOYMENT_EVENT_ID}"
-echo "${status_code}"
-
 if ! [ "${status_code}" == "null" ]; then
     echo "WARNING: Deployment event notification failed with status code ${status_code}"
+    echo "response from mabl API: ${response}"
     exit 20
 else
     echo "Deployment event notification successful"
