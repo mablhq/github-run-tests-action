@@ -33,6 +33,8 @@ response=$(curl --w %{http_code} -v ${TARGET_URL} \
 -H "Content-Type:application/json" \
 -d "${DEPLOYMENT_JSON}")
 
+echo "${response}"
+
 DEPLOYMENT_EVENT_ID=${response::-3} | jq '.id' -r
 status_code=$(echo $response | tail -c 3)
 
