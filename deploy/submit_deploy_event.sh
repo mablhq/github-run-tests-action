@@ -39,7 +39,7 @@ status_code=$(echo $response | tail -c 3)
 echo "${DEPLOYMENT_EVENT_ID}"
 
 if [ "${status_code}" -lt 200 ] || [ "${status_code}" -ge 300 ]; then
-    echo "WARNING: Deployment event notification failed with status code "
+    echo "WARNING: Deployment event notification failed with status code ${status_code}"
     exit 20
 else
     echo "Deployment event notification successful"
