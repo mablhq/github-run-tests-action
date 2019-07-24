@@ -35,8 +35,8 @@ response=$(curl -v ${TARGET_URL} \
 
 echo "mabl deployment call response: ${response}"
 
-DEPLOYMENT_EVENT_ID=${response} | jq '.id' -r
-status_code=${response} | jq '.code' -r
+DEPLOYMENT_EVENT_ID=$(echo "${response}" | jq '.id' -r)
+status_code=$(echo "${response}" | jq '.code' -r)
 
 echo "${DEPLOYMENT_EVENT_ID}"
 echo "${status_code}"
