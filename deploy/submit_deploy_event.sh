@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "${GITHUB_SHA}"
-echo "${MABL_API_KEY}"
-echo "${MABL_ECHO}"
-echo "${version}"
-
 EVENT_TIME="${CI_TIMESTAMP}"
 if [[ -z "${EVENT_TIME}" ]]; then
     EVENT_TIME="$(date +%s)000"
@@ -37,6 +32,8 @@ DEPLOYMENT_EVENT_ID=$(curl -v ${TARGET_URL} \
 -u "key:${MABL_API_KEY}" \
 -H "Content-Type:application/json" \
 -d "${DEPLOYMENT_JSON}" | jq '.id' -r )
+
+echo "${DEPLOYMENT_EVENT_ID}"
 
 if [[ -z ${DEPLOYMENT_EVENT_ID} ]]; then
     echo "WARNING: Deployment event notification failed to return deployment status id"
