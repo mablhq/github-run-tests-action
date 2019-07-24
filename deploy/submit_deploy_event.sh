@@ -28,18 +28,22 @@ DEPLOYMENT_JSON="${DEPLOYMENT_JSON} }"
 TARGET_URL="https://${MABL_API_HOST}/events/deployment"
 
 echo "Sending deployment to mabl with @ ${TARGET_URL}..."
-DEPLOYMENT_EVENT_ID=$(curl -v ${TARGET_URL} \
+response=$(curl --w %{http_code} -v ${TARGET_URL} \
 -u "key:${MABL_API_KEY}" \
 -H "Content-Type:application/json" \
--d "${DEPLOYMENT_JSON}" | jq '.id' -r )
+-d "${DEPLOYMENT_JSON}")
+
+DEPLOYMENT_EVENT_ID=${response::-3} | jq '.id' -r
+status_code=$(echo $response | tail -c 3)
 
 echo "${DEPLOYMENT_EVENT_ID}"
 
-if [[ -z ${DEPLOYMENT_EVENT_ID} ]]; then
-    echo "WARNING: Deployment event notification failed to return deployment status id"
+if [ "${status_code}" -lt 200 ] || [ "${status_code}" -ge 300 ]; then
+    echo "WARNING: Deployment event notification failed with status code "
     exit 20
 else
     echo "Deployment event notification successful"
+    mkdir "${HOME}/mabl"
     echo "${DEPLOYMENT_EVENT_ID}" > "${HOME}/mabl/deployment_event_id"
 fi
 
