@@ -41,7 +41,7 @@ status_code=$(echo "${response}" | jq '.code' -r)
 echo "${DEPLOYMENT_EVENT_ID}"
 echo "${status_code}"
 
-if ! [ "${status_code}" -eq "null" ]; then
+if ! [ "${status_code}" == "null" ]; then
     echo "WARNING: Deployment event notification failed with status code ${status_code}"
     exit 20
 else
