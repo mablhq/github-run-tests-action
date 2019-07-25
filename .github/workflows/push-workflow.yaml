@@ -8,10 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-    
-      - name: create mabl deployment event
+
+      - name: test deployment
+        id: mabl-test-deployment
         uses: ./deploy-and-test/
-        with:
+        env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           APPLICATION_ID: l-j3VqIO6lLLOOEoFTPSxA-a
           ENVIRONMENT_ID: rtb4kWD5LuTr2KxaHvwfaA-e
+
+        with:
+          api-key: ${{ secrets.MABL_API_KEY }}
+          application-id: l-j3VqIO6lLLOOEoFTPSxA-a
+          environment-id: rtb4kWD5LuTr2KxaHvwfaA-e

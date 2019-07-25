@@ -4,50 +4,49 @@ branding:
   icon: 'icons/extension-icon.png'
 inputs:
   api-key:
-    description: >
-      mabl apikey.  Your api key can be found at
-      https://app.mabl.com/workspaces/-/settings/apis
+    description: 'mabl apikey.'
     required: true
   application-id:
-    description: >
-      the mabl id for the deployed application.  You can get the id using the
+    description: ^
+      'the mabl id for the deployed application.  You can get the id using the
       curl builder at https://app.mabl.com/workspaces/-/settings/apis. Either
-      this or environment-id must be provided
+      this or environment-id must be provided'
     required: false
   environment-id:
-    description: >
-      the mabl id for the deployed environment. You can get the id using the
+    description: ^
+      'the mabl id for the deployed environment. You can get the id using the
       curl builder at https://app.mabl.com/workspaces/-/settings/apis.  Either
-      this or application-id must be provided
+      this or application-id must be provided'
     required: false
   browser-types:
-    description: >
-      override for the browser types to test.  If not provided, mabl will test
-      the browsers configured on the triggered test plans.
+    description: ^
+      'override for the browser types to test.  If not provided, mabl will test
+      the browsers configured on the triggered test plans.'
     required: false
   rebaseline-images:
-    description: >
-      Set to true to reset the visual baseline to the current deployment
+    description: ^
+      'Set to true to reset the visual baseline to the current deployment'
     required: false
     default: false
   set-static-baseline:
-    description: >
-      Set to true to use the current deployment as an exact static baseline.  If
-      this is set, mabl will not model dynamic areas and will use the current
-      deployment as a pixel-exact visual baseline.
+    description: ^
+      'Set to true to use the current deployment as an exact static
+      baseline.  If this is set, mabl will not model dynamic areas and will use
+      the current deployment as a pixel-exact visual baseline.'
     required: false
     default: false
   continue-on-failure:
-    description: >
-      Set to true to continue the build even if there are test failures
+    description: ^
+      'Set to true to continue the build even if there are test failures'
     required: false
     default: false
   event-time:
-    description: The event time the deployment happened at.  Defaults to now.
+    description: 'The event time the deployment happened at.  Defaults to now.'
     required: false
 outputs:
   mabl-deployment-id:
-    description: the id of the deployment in mabl
+    description: 'the id of the deployment in mabl'
 runs:
   using: 'node'
   main: 'lib/index.js'
+

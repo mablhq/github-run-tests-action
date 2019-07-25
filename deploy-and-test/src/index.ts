@@ -4,7 +4,7 @@ import {Application} from './entities/Application';
 import {ExecutionResult, Execution} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
 import {generatePublishExecutionResult} from './testOutput';
-import core from '@actions/core/lib/core';
+import * as core from '@actions/core/lib/core';
 
 let EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
 let EXECUTION_COMPLETED_STATUSES: Array<string> = [
@@ -17,16 +17,26 @@ let EXECUTION_COMPLETED_STATUSES: Array<string> = [
 
 async function run() {
   try {
+    Object.keys(process.env).forEach(key => core.debug(key));
+
     // required input
-    const apiKey: string = core.getInput('api-key', {required: true});
+    // const apiKey: string = core.getInput('API_KEY', {required: true});
 
     // basic optional inputs
-    const applicationId: string = core.getInput('application-id', {
-      required: false,
-    });
-    const environmentId: string = core.getInput('environment-id', {
-      required: false,
-    });
+    // const applicationId: string = core.getInput('application-id', {
+    //   required: false,
+    // });
+    // const environmentId: string = core.getInput('environment-id', {
+    //   required: false,
+    // });
+
+    const apiKey: string = process.env.MABL_API_KEY || '';
+    if (!apiKey) {
+      core.setFailed('MABL_API_KEY required');
+    }
+
+    const applicationId: string = process.env.APPLICATION_ID || '';
+    const environmentId: string = process.env.ENVIRONMENT_ID || '';
 
     // plan override options
     const browserTypes: string = core.getInput('browser-types', {
@@ -119,7 +129,6 @@ async function run() {
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
       prettyPrintExecution(execution);
-      console.log('');
     });
 
     generatePublishExecutionResult(
@@ -128,8 +137,6 @@ async function run() {
       deployment.id,
       outputLink,
     );
-
-    core.debug('mabl Azure DevOps Pipeline Extension Complete');
 
     if (finalExecutionResult.plan_execution_metrics.failed === 0) {
       core.debug('Deployment plans passed');

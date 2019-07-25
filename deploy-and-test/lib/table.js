@@ -12,7 +12,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cli_table3_1 = __importDefault(require("cli-table3"));
 const moment = __importStar(require("moment"));
-const core_1 = __importDefault(require("@actions/core/lib/core"));
+const core = __importStar(require("@actions/core/lib/core"));
 function prettyPrintExecution(execution) {
     let planTable = new cli_table3_1.default({
         head: [],
@@ -52,7 +52,7 @@ function prettyPrintExecution(execution) {
             jE.app_href,
         ]);
     });
-    core_1.default.debug(planTable.toString());
-    core_1.default.debug(journeyTable.toString());
+    core.debug(planTable.toString());
+    core.debug(journeyTable.toString());
 }
 exports.prettyPrintExecution = prettyPrintExecution;

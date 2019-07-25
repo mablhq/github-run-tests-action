@@ -10,6 +10,6 @@ jobs:
       - name: create mabl deployment event
         uses: ./deploy-and-test/
         with:
-          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          APPLICATION_ID: l-j3VqIO6lLLOOEoFTPSxA-a
-          ENVIRONMENT_ID: rtb4kWD5LuTr2KxaHvwfaA-e
+          api-key: ${{ secrets.MABL_API_KEY }}
+          application-id: l-j3VqIO6lLLOOEoFTPSxA-a
+          environment-id: rtb4kWD5LuTr2KxaHvwfaA-e

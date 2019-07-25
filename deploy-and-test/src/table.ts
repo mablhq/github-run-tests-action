@@ -2,7 +2,7 @@ import {Execution, JourneyInfo} from './entities/ExecutionResult';
 import Table from 'cli-table3';
 import {HorizontalTable} from 'cli-table3';
 import * as moment from 'moment';
-import core from '@actions/core/lib/core';
+import * as core from '@actions/core/lib/core';
 
 export function prettyPrintExecution(execution: Execution) {
   let planTable = new Table({
