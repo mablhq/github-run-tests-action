@@ -50,4 +50,4 @@ outputs:
     description: the id of the deployment in mabl
 runs:
   using: 'node'
-  main: 'lib/indx.js'
+  main: 'lib/index.js'
