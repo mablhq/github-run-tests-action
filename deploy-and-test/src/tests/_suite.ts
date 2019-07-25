@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {} from 'mocha';
-import {mablApiClient} from '../src/mablApiClient';
+import {mablApiClient} from '../mablApiClient';
 
 describe('azure pipeline task tests', function() {
   before(function() {});
