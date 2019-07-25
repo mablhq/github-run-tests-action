@@ -1,5 +1,5 @@
 name: 'Run mabl tests'
 description: 'Register a deployment event with mabl and run associated tests'
 runs:
-  using: 'node'
+  using: 'node12'
   main: 'lib/index.js'
