@@ -50,8 +50,7 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
-    const baseApiUrl =
-      core.getInput('base-url', {required: false}) || 'https://api.mabl.com';
+    const baseApiUrl = process.env.APP_URL || 'https://app.mabl.com';
 
     // set up http client
     let apiClient: mablApiClient = new mablApiClient(apiKey);

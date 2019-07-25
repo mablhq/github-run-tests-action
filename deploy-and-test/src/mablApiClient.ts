@@ -4,10 +4,10 @@ import retry from 'async-retry';
 import {Application} from './entities/Application';
 import {Deployment} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
-import {BASE_URL} from './env/env';
 
 export class mablApiClient {
   httpClient: httpm.HttpClient;
+  baseUrl: string = process.env.APP_URL || 'https://api.mabl.com';
 
   constructor(apiKey: string) {
     let bh: hm.BasicCredentialHandler = new hm.BasicCredentialHandler(
@@ -72,7 +72,7 @@ export class mablApiClient {
   async getApplication(applicationId: string): Promise<any> {
     try {
       let response: Application = await this.makeGetRequest(
-        `${BASE_URL}/v1/applications/${applicationId}`,
+        `${this.baseUrl}/v1/applications/${applicationId}`,
       );
       return response;
     } catch (e) {
@@ -83,7 +83,7 @@ export class mablApiClient {
   async getExecutionResults(eventId: string): Promise<any> {
     try {
       let response: ExecutionResult = await this.makeGetRequest(
-        `${BASE_URL}/execution/result/event/${eventId}`,
+        `${this.baseUrl}/execution/result/event/${eventId}`,
       );
       return response;
     } catch (e) {
@@ -109,7 +109,7 @@ export class mablApiClient {
         setStaticBaseline,
       );
       let response: Deployment = await this.makePostRequest(
-        `${BASE_URL}/events/deployment/`,
+        `${this.baseUrl}/events/deployment/`,
         requestBody,
       );
       return response;

@@ -1,5 +1,6 @@
-import {Execution, PlanInfo, JourneyInfo} from './entities/ExecutionResult';
+import {Execution, JourneyInfo} from './entities/ExecutionResult';
 import Table from 'cli-table3';
+import {HorizontalTable} from 'cli-table3';
 import * as moment from 'moment';
 import core from '@actions/core/lib/core';
 
@@ -12,7 +13,7 @@ export function prettyPrintExecution(execution: Execution) {
     },
     colWidths: [15, 30, 15, 13, 15, 20, 17, 130],
     wordWrap: true,
-  });
+  }) as HorizontalTable;
   planTable.push([
     'Plan Name:',
     execution.plan.name,
@@ -32,7 +33,7 @@ export function prettyPrintExecution(execution: Execution) {
     },
     colWidths: [10, 15, 27, 15, 160],
     wordWrap: true,
-  });
+  }) as HorizontalTable;
   execution.journey_executions.forEach(jE => {
     let journey: JourneyInfo | undefined = execution.journeys.find(
       journey => journey.id === jE.journey_id,
