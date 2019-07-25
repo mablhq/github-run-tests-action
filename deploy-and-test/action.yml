@@ -49,5 +49,5 @@ outputs:
   mabl-deployment-id:
     description: the id of the deployment in mabl
 runs:
-  using: 'node'
+  using: 'node12'
   main: 'lib/index.js'
