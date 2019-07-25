@@ -6,7 +6,7 @@ jobs:
   test:
     name: Mabl Test
     runs-on: ubuntu-latest
-    actions:
+    steps:
       - name: create mabl deployment event
         uses: ./deploy-and-test/
         with:
