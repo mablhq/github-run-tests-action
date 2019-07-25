@@ -2,7 +2,7 @@ import * as httpm from 'typed-rest-client/HttpClient';
 import * as hm from 'typed-rest-client/Handlers';
 import retry from 'async-retry';
 import {Application} from './entities/Application';
-import {Deployment} from './entities/Deployment';
+import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 
 export class mablApiClient {
@@ -98,6 +98,9 @@ export class mablApiClient {
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
+    revision: string | undefined,
+    event_time: number,
+    properties: DeploymentProperties,
   ): Promise<any> {
     try {
       let requestBody: any = this.buildRequestBody(

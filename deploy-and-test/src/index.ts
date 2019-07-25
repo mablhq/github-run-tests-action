@@ -50,13 +50,21 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
+    const eventTimeString = core.getInput('event-time', {required: false});
+    const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
+
+    const properties = {
+      branch: process.env.GITHUB_REF,
+      committer: process.env.GITHUB_ACTOR,
+    };
     const baseApiUrl = process.env.APP_URL || 'https://app.mabl.com';
 
     // set up http client
     let apiClient: mablApiClient = new mablApiClient(apiKey);
-
-    // send the deployment
-    core.debug('Creating Deployment');
+    const revision = process.env.GITHUB_SHA;
+    const event_time =
+      // send the deployment
+      core.debug('Creating Deployment');
     let deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
@@ -64,7 +72,12 @@ async function run() {
       uri,
       rebaselineImages,
       setStaticBaseline,
+      revision,
+      eventTime,
+      properties,
     );
+
+    core.setOutput('mabl-deployment-id', deployment.id);
 
     let outputLink: string = baseApiUrl;
     if (applicationId) {
