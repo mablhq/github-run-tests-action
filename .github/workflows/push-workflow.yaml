@@ -3,7 +3,7 @@ on: [push]
 name: mabl
 
 jobs:
-  jobs:
+  test:
     name: Mabl Test
     runs-on: ubuntu-latest
     actions:
