@@ -7,6 +7,8 @@ jobs:
     name: Mabl Test
     runs-on: ubuntu-latest
     steps:
+      - run: ls /home/vsts/work/github-mabl-actions/github-mabl-actions/./deploy-and-test
+    
       - name: create mabl deployment event
         uses: ./deploy-and-test
         with:
