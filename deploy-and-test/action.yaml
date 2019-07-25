@@ -1,0 +1,9 @@
+name: 'Run mabl tests'
+description: 'Register a deployment event with mabl and run associated tests'
+branding: 
+  icon: 'icons/extension-icon.png'
+inputs:
+  
+runs:
+  using: 'node'
+  main: 'lib/indx.js'
