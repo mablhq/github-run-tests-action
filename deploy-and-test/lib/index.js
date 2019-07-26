@@ -29,9 +29,6 @@ let EXECUTION_COMPLETED_STATUSES = [
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            Object.keys(process.env).forEach(key => core.debug(key));
-            // required input
-            // const apiKey: string = core.getInput('API_KEY', {required: true});
             const applicationId = core.getInput('application-id', {
                 required: false,
             });

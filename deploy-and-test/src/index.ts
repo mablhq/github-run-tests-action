@@ -16,11 +16,6 @@ let EXECUTION_COMPLETED_STATUSES: Array<string> = [
 
 async function run() {
   try {
-    Object.keys(process.env).forEach(key => core.debug(key));
-
-    // required input
-    // const apiKey: string = core.getInput('API_KEY', {required: true});
-
     const applicationId: string = core.getInput('application-id', {
       required: false,
     });
