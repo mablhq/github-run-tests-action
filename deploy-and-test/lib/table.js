@@ -57,6 +57,6 @@ function prettyPrintExecution(execution) {
 }
 exports.prettyPrintExecution = prettyPrintExecution;
 function outputTable(table) {
-    let tableAsString = table.toString();
-    tableAsString.split(/[\r\n]+/).forEach(line => core.debug(line));
+    let tableAsString = table.toString().replace(/[\r\n]+/, '\n    ');
+    core.debug(tableAsString);
 }
