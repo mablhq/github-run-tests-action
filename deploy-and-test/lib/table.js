@@ -52,7 +52,11 @@ function prettyPrintExecution(execution) {
             jE.app_href,
         ]);
     });
-    planTable.forEach(row => core.debug(row.toString()));
-    journeyTable.forEach(row => core.debug(row.toString()));
+    outputTable(planTable);
+    outputTable(journeyTable);
 }
 exports.prettyPrintExecution = prettyPrintExecution;
+function outputTable(table) {
+    let tableAsString = table.toString();
+    tableAsString.split(/[\r\n]+/).forEach(line => core.debug(line));
+}

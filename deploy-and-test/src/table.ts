@@ -47,6 +47,11 @@ export function prettyPrintExecution(execution: Execution) {
     ]);
   });
 
-  planTable.forEach(row => core.debug(row.toString()));
-  journeyTable.forEach(row => core.debug(row.toString()));
+  outputTable(planTable);
+  outputTable(journeyTable);
+}
+
+function outputTable(table: HorizontalTable) {
+  let tableAsString = table.toString();
+  tableAsString.split(/[\r\n]+/).forEach(line => core.debug(line));
 }
