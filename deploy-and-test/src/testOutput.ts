@@ -1,7 +1,7 @@
 import {ExecutionResult, JourneyInfo} from './entities/ExecutionResult';
 var builder = require('xmlbuilder');
 import path = require('path');
-import task = require('azure-pipelines-task-lib/task');
+import * as core from '@actions/core/lib/core';
 
 /**
  * Generate and save a junit xml file
@@ -75,19 +75,4 @@ export function generatePublishExecutionResult(
 
   let feed = builder.create(feedObj, {encoding: 'utf-8'});
   let finalXml = feed.end({pretty: true});
-  writeToFileSystem(filename, finalXml);
-}
-
-function writeToFileSystem(filename: string, finalXml: any) {
-  let fileWithPath = path.join(__dirname, filename);
-  task.writeFile(fileWithPath, finalXml);
-  let tp = new task.TestPublisher('JUnit');
-  tp.publish(
-    fileWithPath,
-    false,
-    'mabl',
-    '',
-    'mabl deployment triggered tests',
-    false,
-  );
 }
