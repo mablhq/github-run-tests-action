@@ -52,7 +52,7 @@ function prettyPrintExecution(execution) {
             jE.app_href,
         ]);
     });
-    core.debug(planTable.toString());
-    core.debug(journeyTable.toString());
+    planTable.forEach(row => core.debug(row.toString()));
+    journeyTable.forEach(row => core.debug(row.toString()));
 }
 exports.prettyPrintExecution = prettyPrintExecution;
