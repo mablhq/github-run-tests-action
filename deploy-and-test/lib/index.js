@@ -32,19 +32,16 @@ function run() {
             Object.keys(process.env).forEach(key => core.debug(key));
             // required input
             // const apiKey: string = core.getInput('API_KEY', {required: true});
-            // basic optional inputs
-            // const applicationId: string = core.getInput('application-id', {
-            //   required: false,
-            // });
-            // const environmentId: string = core.getInput('environment-id', {
-            //   required: false,
-            // });
+            const applicationId = core.getInput('application-id', {
+                required: false,
+            });
+            const environmentId = core.getInput('environment-id', {
+                required: false,
+            });
             const apiKey = process.env.MABL_API_KEY || '';
             if (!apiKey) {
                 core.setFailed('MABL_API_KEY required');
             }
-            const applicationId = process.env.APPLICATION_ID || '';
-            const environmentId = process.env.ENVIRONMENT_ID || '';
             // plan override options
             const browserTypes = core.getInput('browser-types', {
                 required: false,

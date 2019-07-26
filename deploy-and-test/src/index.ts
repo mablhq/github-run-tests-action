@@ -21,21 +21,17 @@ async function run() {
     // required input
     // const apiKey: string = core.getInput('API_KEY', {required: true});
 
-    // basic optional inputs
-    // const applicationId: string = core.getInput('application-id', {
-    //   required: false,
-    // });
-    // const environmentId: string = core.getInput('environment-id', {
-    //   required: false,
-    // });
+    const applicationId: string = core.getInput('application-id', {
+      required: false,
+    });
+    const environmentId: string = core.getInput('environment-id', {
+      required: false,
+    });
 
     const apiKey: string = process.env.MABL_API_KEY || '';
     if (!apiKey) {
       core.setFailed('MABL_API_KEY required');
     }
-
-    const applicationId: string = process.env.APPLICATION_ID || '';
-    const environmentId: string = process.env.ENVIRONMENT_ID || '';
 
     // plan override options
     const browserTypes: string = core.getInput('browser-types', {
