@@ -3,9 +3,6 @@ description: 'Register a deployment event with mabl and run associated tests'
 branding:
   icon: 'icons/extension-icon.png'
 inputs:
-  api-key:
-    description: 'mabl apikey.'
-    required: true
   application-id:
     description: ^
       'the mabl id for the deployed application.  You can get the id using the
