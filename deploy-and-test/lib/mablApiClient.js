@@ -87,7 +87,7 @@ class mablApiClient {
     postDeploymentEvent(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, event_time, properties) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let requestBody = this.buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline);
+                let requestBody = this.buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, event_time, properties);
                 let response = yield this.makePostRequest(`${this.baseUrl}/events/deployment/`, requestBody);
                 return response;
             }
@@ -96,7 +96,7 @@ class mablApiClient {
             }
         });
     }
-    buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline) {
+    buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, event_time, properties) {
         let requestBody = {};
         environmentId ? (requestBody.environment_id = environmentId) : null;
         applicationId ? (requestBody.application_id = applicationId) : null;
@@ -111,6 +111,9 @@ class mablApiClient {
         setStaticBaseline
             ? (actions.set_static_baseline = setStaticBaseline)
             : null;
+        revision ? (actions.revision = revision) : null;
+        event_time ? (actions.event_time = event_time) : null;
+        properties ? (actions.properties = properties) : null;
         requestBody.actions = actions;
         return requestBody;
     }

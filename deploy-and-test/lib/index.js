@@ -17,7 +17,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mablApiClient_1 = require("./mablApiClient");
 const table_1 = require("./table");
-const testOutput_1 = require("./testOutput");
 const core = __importStar(require("@actions/core/lib/core"));
 let EXECUTION_POLL_INTERVAL_MILLIS = 10000;
 let EXECUTION_COMPLETED_STATUSES = [
@@ -100,7 +99,6 @@ function run() {
             finalExecutionResult.executions.forEach((execution) => {
                 table_1.prettyPrintExecution(execution);
             });
-            testOutput_1.generatePublishExecutionResult('mabl-deployment-test-output.xml', finalExecutionResult, deployment.id, outputLink);
             if (finalExecutionResult.plan_execution_metrics.failed === 0) {
                 core.debug('Deployment plans passed');
             }

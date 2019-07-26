@@ -18,6 +18,9 @@ describe('azure pipeline task tests', function() {
       'uri',
       true,
       true,
+      'abcs',
+      0,
+      {branch: 'master', committer: 'gcooney'},
     );
     assert.equal(expected, JSON.stringify(requestBody));
     done();
@@ -34,6 +37,9 @@ describe('azure pipeline task tests', function() {
       'uri',
       false,
       false,
+      'abcs',
+      0,
+      {branch: 'master', committer: 'gcooney'},
     );
     assert.equal(expected, JSON.stringify(requestBody));
     done();

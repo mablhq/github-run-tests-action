@@ -110,6 +110,9 @@ export class mablApiClient {
         uri,
         rebaselineImages,
         setStaticBaseline,
+        revision,
+        event_time,
+        properties,
       );
       let response: Deployment = await this.makePostRequest(
         `${this.baseUrl}/events/deployment/`,
@@ -128,6 +131,9 @@ export class mablApiClient {
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
+    revision: string | undefined,
+    event_time: number,
+    properties: DeploymentProperties,
   ): any {
     let requestBody: any = {};
 
@@ -146,6 +152,9 @@ export class mablApiClient {
     setStaticBaseline
       ? (actions.set_static_baseline = setStaticBaseline)
       : null;
+    revision ? (actions.revision = revision) : null;
+    event_time ? (actions.event_time = event_time) : null;
+    properties ? (actions.properties = properties) : null;
     requestBody.actions = actions;
     return requestBody;
   }

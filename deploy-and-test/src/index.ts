@@ -3,7 +3,6 @@ import {Deployment} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {ExecutionResult, Execution} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
-import {generatePublishExecutionResult} from './testOutput';
 import * as core from '@actions/core/lib/core';
 
 let EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
@@ -130,13 +129,6 @@ async function run() {
     finalExecutionResult.executions.forEach((execution: Execution) => {
       prettyPrintExecution(execution);
     });
-
-    generatePublishExecutionResult(
-      'mabl-deployment-test-output.xml',
-      finalExecutionResult,
-      deployment.id,
-      outputLink,
-    );
 
     if (finalExecutionResult.plan_execution_metrics.failed === 0) {
       core.debug('Deployment plans passed');
