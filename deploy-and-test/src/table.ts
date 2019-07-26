@@ -53,5 +53,5 @@ export function prettyPrintExecution(execution: Execution) {
 
 function outputTable(table: HorizontalTable) {
   let tableAsString = table.toString().replace(/[\r\n]+/, '\n    ');
-  core.debug(tableAsString);
+  console.log(tableAsString);
 }

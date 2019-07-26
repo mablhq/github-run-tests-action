@@ -12,7 +12,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cli_table3_1 = __importDefault(require("cli-table3"));
 const moment = __importStar(require("moment"));
-const core = __importStar(require("@actions/core/lib/core"));
 function prettyPrintExecution(execution) {
     let planTable = new cli_table3_1.default({
         head: [],
@@ -58,5 +57,5 @@ function prettyPrintExecution(execution) {
 exports.prettyPrintExecution = prettyPrintExecution;
 function outputTable(table) {
     let tableAsString = table.toString().replace(/[\r\n]+/, '\n    ');
-    core.debug(tableAsString);
+    console.log(tableAsString);
 }
