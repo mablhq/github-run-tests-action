@@ -1,7 +1,7 @@
 {
-  "name": "mabl-azure-devops-extension",
+  "name": "mabl-github-deployments-action",
   "version": "0.0.1",
-  "description": "The mabl github action for integrating mabl into github pipelines",
+  "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/index.js",
   "scripts": {
     "test": "tsc && mocha ./tests/_suite.js",

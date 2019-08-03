@@ -64,12 +64,16 @@ Typescript files and checked the .js files in as well.
 
 ### Adding new dependencies
 
-Actions need to be checked in with everything they need to run. If you update
-dependencies you will need to commit the changes to node modules as well.
+Check in the Action with everything it needs to run. If you update
+dependencies you will need to commit the changes to Node modules as well.
 
 ```bash
+# Remove any non-production dependencies
 npm prune --production
+# Compile Typescript to ES6
 npm run build
+# Add the compiled Typescript output
 git add lib/
+# 
 git add -f node_modules/*
 ```

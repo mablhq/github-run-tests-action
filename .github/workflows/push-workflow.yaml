@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: test deployment
+      - name: Functional test deployment
         id: mabl-test-deployment
         uses: ./deploy-and-test/
         env:
