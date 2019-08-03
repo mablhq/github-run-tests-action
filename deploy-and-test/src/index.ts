@@ -1,12 +1,13 @@
 import {mablApiClient} from './mablApiClient';
 import {Deployment} from './entities/Deployment';
 import {Application} from './entities/Application';
-import {ExecutionResult, Execution} from './entities/ExecutionResult';
+import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
 import * as core from '@actions/core/lib/core';
 
-let EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
-let EXECUTION_COMPLETED_STATUSES: Array<string> = [
+const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
+const EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
+const EXECUTION_COMPLETED_STATUSES: Array<string> = [
   'succeeded',
   'failed',
   'cancelled',
@@ -57,14 +58,14 @@ async function run() {
       branch: process.env.GITHUB_REF,
       committer: process.env.GITHUB_ACTOR,
     };
-    const baseApiUrl = process.env.APP_URL || 'https://app.mabl.com';
+    const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
 
     // set up http client
     let apiClient: mablApiClient = new mablApiClient(apiKey);
     const revision = process.env.GITHUB_SHA;
-    const event_time =
-      // send the deployment
-      core.debug('Creating Deployment');
+
+    // send the deployment
+    core.debug('Creating Deployment');
     let deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
@@ -145,23 +146,20 @@ async function run() {
 }
 
 function parseBoolean(toParse: string): boolean {
-  if (toParse && toParse.toLowerCase() == 'true') return true;
-
-  return false;
+  return !!(toParse && toParse.toLowerCase() == 'true');
 }
 
 function getExecutionsStillPending(
   executionResult: ExecutionResult,
 ): Array<Execution> {
-  let pendingExecutions = executionResult.executions.filter(
-    (execution: Execution) => {
-      return !(
-        EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
-        execution.stop_time
-      );
-    },
+    return executionResult.executions.filter(
+      (execution: Execution) => {
+          return !(
+              EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
+              execution.stop_time
+          );
+      },
   );
-  return pendingExecutions;
 }
 
 run();

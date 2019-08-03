@@ -13,13 +13,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
     result["default"] = mod;
     return result;
-}
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mablApiClient_1 = require("./mablApiClient");
 const table_1 = require("./table");
 const core = __importStar(require("@actions/core/lib/core"));
-let EXECUTION_POLL_INTERVAL_MILLIS = 10000;
-let EXECUTION_COMPLETED_STATUSES = [
+const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
+const EXECUTION_POLL_INTERVAL_MILLIS = 10000;
+const EXECUTION_COMPLETED_STATUSES = [
     'succeeded',
     'failed',
     'cancelled',
@@ -58,11 +59,10 @@ function run() {
                 branch: process.env.GITHUB_REF,
                 committer: process.env.GITHUB_ACTOR,
             };
-            const baseApiUrl = process.env.APP_URL || 'https://app.mabl.com';
+            const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
             // set up http client
             let apiClient = new mablApiClient_1.mablApiClient(apiKey);
             const revision = process.env.GITHUB_SHA;
-            const event_time = 
             // send the deployment
             core.debug('Creating Deployment');
             let deployment = yield apiClient.postDeploymentEvent(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, eventTime, properties);
@@ -110,15 +110,12 @@ function run() {
     });
 }
 function parseBoolean(toParse) {
-    if (toParse && toParse.toLowerCase() == 'true')
-        return true;
-    return false;
+    return !!(toParse && toParse.toLowerCase() == 'true');
 }
 function getExecutionsStillPending(executionResult) {
-    let pendingExecutions = executionResult.executions.filter((execution) => {
+    return executionResult.executions.filter((execution) => {
         return !(EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
             execution.stop_time);
     });
-    return pendingExecutions;
 }
 run();
