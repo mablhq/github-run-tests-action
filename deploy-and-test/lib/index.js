@@ -56,8 +56,11 @@ function run() {
             const eventTimeString = core.getInput('event-time', { required: false });
             const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
             const properties = {
-                branch: process.env.GITHUB_REF,
                 committer: process.env.GITHUB_ACTOR,
+                repositoryAction: process.env.GITHUB_ACTION,
+                repositoryBranchName: process.env.GITHUB_REF,
+                repositoryRevisionNumber: process.env.GITHUB_SHA,
+                repositoryUrl: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
             };
             const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
             // set up http client

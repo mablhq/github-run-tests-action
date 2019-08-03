@@ -84,12 +84,11 @@ class mablApiClient {
             }
         });
     }
-    postDeploymentEvent(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, event_time, properties) {
+    postDeploymentEvent(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, eventTime, properties) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let requestBody = this.buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, event_time, properties);
-                let response = yield this.makePostRequest(`${this.baseUrl}/events/deployment/`, requestBody);
-                return response;
+                let requestBody = this.buildRequestBody(applicationId, environmentId, browserTypes, uri, rebaselineImages, setStaticBaseline, revision, eventTime, properties);
+                return yield this.makePostRequest(`${this.baseUrl}/events/deployment/`, requestBody);
             }
             catch (e) {
                 throw `failed to create deployment through mabl API ${e}`;

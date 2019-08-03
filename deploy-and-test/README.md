@@ -1,8 +1,8 @@
-# mabl deploy
+![mabl logo](https://avatars3.githubusercontent.com/u/25963599?s=100&v=4)
 
-## Usage
+# mabl Functional Test Deployment Action
 
-Creates a deployment event in mabl, triggering any tests associated with that
+This GitHub Action creates a mabl deployment event, triggering any functional tests associated with that
 deployment and waiting for their results.
 
 ### Example action:
@@ -70,10 +70,13 @@ dependencies you will need to commit the changes to Node modules as well.
 ```bash
 # Remove any non-production dependencies
 npm prune --production
+
 # Compile Typescript to ES6
 npm run build
+
 # Add the compiled Typescript output
 git add lib/
-# 
+
+# Add Node dependencies
 git add -f node_modules/*
 ```

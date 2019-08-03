@@ -99,10 +99,11 @@ export class mablApiClient {
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
     revision: string | undefined,
-    event_time: number,
+    eventTime: number,
     properties: DeploymentProperties,
-  ): Promise<any> {
+  ): Promise<Deployment> {
     try {
+
       let requestBody: any = this.buildRequestBody(
         applicationId,
         environmentId,
@@ -111,14 +112,13 @@ export class mablApiClient {
         rebaselineImages,
         setStaticBaseline,
         revision,
-        event_time,
+        eventTime,
         properties,
       );
-      let response: Deployment = await this.makePostRequest(
+      return await this.makePostRequest(
         `${this.baseUrl}/events/deployment/`,
         requestBody,
       );
-      return response;
     } catch (e) {
       throw `failed to create deployment through mabl API ${e}`;
     }

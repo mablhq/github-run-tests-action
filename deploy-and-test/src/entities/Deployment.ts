@@ -15,6 +15,9 @@ interface TriggeredPlanSummary {
 }
 
 export interface DeploymentProperties {
-  branch: string | undefined;
   committer: string | undefined;
+  repositoryAction: string | undefined;
+  repositoryBranchName: string | undefined;
+  repositoryRevisionNumber: string | undefined;
+  repositoryUrl: string | undefined;
 }
