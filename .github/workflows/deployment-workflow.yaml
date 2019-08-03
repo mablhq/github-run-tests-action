@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create mabl deployment event
-        uses: ./mabl-deployment-test/
+        uses: ./deploy-and-test/
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
         with:
