@@ -1,7 +1,8 @@
 name: 'Run mabl tests'
 description: 'Register a deployment event with mabl and run associated tests'
 branding:
-  icon: 'icons/extension-icon.png'
+  icon: 'icons/mabl_logo_196px.svg'
+  color: '#6a67ce'
 inputs:
   application-id:
     description: ^
@@ -42,7 +43,7 @@ inputs:
     required: false
 outputs:
   mabl-deployment-id:
-    description: 'the id of the deployment in mabl'
+    description: 'mabl deployment event id'
 runs:
   using: 'node12'
   main: 'lib/index.js'
