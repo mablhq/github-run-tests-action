@@ -82,8 +82,8 @@ problem, please file an Issue in this repo.
 ### Making updates
 
 Actions need the compiled code checked in. This means your changes will only
-take effect if you have run the build to generate .js files from the .ts
-Typescript files and checked the .js files in as well.
+take effect if you run the build to generate .js files from the .ts
+Typescript files and check the .js files in as well.
 
 ### Adding new dependencies
 
