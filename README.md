@@ -36,8 +36,8 @@ jobs:
 
 **Note**: Either `application-id` or `environment-id` must be supplied.
 
-- `application-id` {string} (optional) - mabl id for the deployed application. Use the [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button) to find the id. 
-- `environment-id` {string} (optional) - mabl id for the deployed environment. Use the [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button) to find the id. 
+- `application-id` {string} (optional) - mabl id for the deployed application. Use the [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button) to find the id.
+- `environment-id` {string} (optional) - mabl id for the deployed environment. Use the [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button) to find the id.
 - `browser-types` (optional): override for browser types to test e.g. `firefox,safari`. If not
   provided, mabl will test the browsers configured on the triggered test.
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual baseline to the
@@ -80,3 +80,7 @@ git add lib/
 # Add Node dependencies
 git add -f node_modules/*
 ```
+
+## Contributions and Issues
+
+If you would like to contribute, please submit a PR. If you encounter an problem, please file an Issue in this repo.
