@@ -46,8 +46,8 @@ jobs:
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
   to find the id.
 - `browser-types` (optional): override for browser types to test e.g.
-  `firefox,safari`. If not provided, mabl will test the browsers configured on
-  the triggered test.
+  `chrome, firefox, safari, internet_explorer`. If not provided, mabl will test
+  the browsers configured on the triggered test.
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
 - `set-static-baseline` (optional) - Set `true` to use current deployment as an
@@ -74,7 +74,10 @@ jobs:
 - `journeys_failed` {int32} - number of mabl journeys that failed against this
   deployment. A mabl journey is an end to end test of your application.
 
-## Developer Notes
+## Contributions and Issues
+
+If you would like to contribute, please submit a PR. If you encounter an
+problem, please file an Issue in this repo.
 
 ### Making updates
 
@@ -100,8 +103,3 @@ git add lib/
 # Add Node dependencies
 git add -f node_modules/*
 ```
-
-## Contributions and Issues
-
-If you would like to contribute, please submit a PR. If you encounter an
-problem, please file an Issue in this repo.
