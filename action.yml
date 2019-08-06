@@ -1,8 +1,8 @@
-name: 'Run mabl tests'
-description: 'Register a deployment event with mabl and run associated tests'
+name: "Run mabl tests"
+description: "Register a deployment event with mabl and run associated tests"
 branding:
-  icon: 'icons/mabl_logo_196px.svg'
-  color: '#6a67ce'
+  icon: "icons/mabl_logo_196px.svg"
+  color: "#6a67ce"
 inputs:
   application-id:
     description: ^
@@ -39,11 +39,24 @@ inputs:
     required: false
     default: false
   event-time:
-    description: 'The event time the deployment happened at.  Defaults to now.'
+    description: "The event time the deployment happened at.  Defaults to now."
     required: false
 outputs:
   mabl-deployment-id:
-    description: 'mabl deployment event id'
+    description: "mabl deployment event id"
+  plans_run:
+    description: "total number of mabl plans run against this deployment.  A mabl plan is a collection of similarly configured tests."
+  plans_passed:
+    description: "number of mabl plans that passed against this deployment.  A mabl plan is a collection of similarly configured tests."
+  plans_failed:
+    description: "number of mabl plans that failed against this deployment.  A mabl plan is a collection of similarly configured tests."
+  journeys_run:
+    description: "total number of mabl journeys run against this deployment.  A mabl journey is an end to end test of your application."
+  journeys_passed:
+    description: "number of mabl journeys that passed against this deployment.  A mabl journey is an end to end test of your application."
+  journeys_failed:
+    description: "number of mabl journeys that failed against this deployment.  A mabl journey is an end to end test of your application."
+
 runs:
-  using: 'node12'
-  main: 'lib/index.js'
+  using: "node12"
+  main: "lib/index.js"
