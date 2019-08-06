@@ -125,6 +125,31 @@ async function run() {
       prettyPrintExecution(execution);
     });
 
+    core.setOutput(
+      'plans_run',
+      '' + finalExecutionResult.plan_execution_metrics.total,
+    );
+    core.setOutput(
+      'plans_passed',
+      '' + finalExecutionResult.plan_execution_metrics.passed,
+    );
+    core.setOutput(
+      'plans_failed',
+      '' + finalExecutionResult.plan_execution_metrics.failed,
+    );
+    core.setOutput(
+      'journeys_run',
+      '' + finalExecutionResult.plan_execution_metrics.total,
+    );
+    core.setOutput(
+      'journeys_passed',
+      '' + finalExecutionResult.plan_execution_metrics.passed,
+    );
+    core.setOutput(
+      'journeys_failed',
+      '' + finalExecutionResult.plan_execution_metrics.failed,
+    );
+
     if (finalExecutionResult.plan_execution_metrics.failed === 0) {
       core.debug('Deployment plans passed');
     } else if (continueOnPlanFailure) {
@@ -155,14 +180,12 @@ function parseBoolean(toParse: string): boolean {
 function getExecutionsStillPending(
   executionResult: ExecutionResult,
 ): Array<Execution> {
-    return executionResult.executions.filter(
-      (execution: Execution) => {
-          return !(
-              EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
-              execution.stop_time
-          );
-      },
-  );
+  return executionResult.executions.filter((execution: Execution) => {
+    return !(
+      EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
+      execution.stop_time
+    );
+  });
 }
 
 run();
