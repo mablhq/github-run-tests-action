@@ -1,6 +1,6 @@
 ![mabl logo](https://avatars3.githubusercontent.com/u/25963599?s=100&v=4)
 
-# mabl Functional Test Deployment Action
+# mabl GitHub Run Tests Deployment Action
 
 This GitHub Action creates a mabl deployment event, triggering any functional
 tests associated with that deployment and waiting for their results.
