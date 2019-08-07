@@ -6,7 +6,7 @@ jobs:
   test:
     name: Mabl Test
     runs-on: ubuntu-latest
-    steps:
+    steps
       - uses: actions/checkout@master
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
@@ -20,4 +20,4 @@ jobs:
       - name: Do something on failure
         id: check-test-results
         run: exit 1
-        if: (job.steps.mabl-test-deployment.outputs.journey_failures > 1)
+        if: (job.steps.mabl-test-deployment.outputs.journey_failures > 0)
