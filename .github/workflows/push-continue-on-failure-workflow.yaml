@@ -18,5 +18,6 @@ jobs:
           environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
         continue-on-error: true
       - name: Do something on failure
-        run: echo 'too many failures.  Do something.'
+        id: check-test-results
+        run: exit 1
         if: ({{steps.mabl-test-deployment.journey_failures}} > 1)
