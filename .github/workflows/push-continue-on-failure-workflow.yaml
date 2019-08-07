@@ -16,7 +16,6 @@ jobs:
         with:
           application-id: l-j3VqIO6lLLOOEoFTPSxA-a
           environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
-        outputs: journeys_failed
         continue-on-error: true
       - name: Do something on failure
         id: check-test-results
