@@ -5,7 +5,7 @@
 This GitHub Action creates a mabl deployment event, triggering any functional
 tests associated with that deployment and waiting for their results.
 
-### Example action:
+### Example workflow:
 
 ```
 on: [push]
