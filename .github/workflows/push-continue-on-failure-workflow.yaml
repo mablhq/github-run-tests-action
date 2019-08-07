@@ -19,5 +19,5 @@ jobs:
         continue-on-error: true
       - name: Do something on failure
         id: check-test-results
-        run: exit 1
+        run: echo failed
         if: (job.steps.mabl-test-deployment.outputs.journeys_failed > 0)
