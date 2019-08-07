@@ -15,9 +15,17 @@ interface TriggeredPlanSummary {
 }
 
 export interface DeploymentProperties {
-  committer: string | undefined;
-  repositoryAction: string | undefined;
-  repositoryBranchName: string | undefined;
-  repositoryRevisionNumber: string | undefined;
-  repositoryUrl: string | undefined;
+  triggering_event_name: string | undefined;
+  repository_commit_username: string | undefined;
+  repository_action: string | undefined;
+  repository_branch_name: string | undefined;
+  repository_url: string | undefined;
+  repository_pull_request: PullRequest | undefined;
+}
+
+export interface PullRequest {
+  title: string | undefined;
+  number: number | undefined;
+  created_at: string | undefined;
+  merged_at: string | undefined;
 }

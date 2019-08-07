@@ -1,8 +1,9 @@
 import {mablApiClient} from './mablApiClient';
-import {Deployment} from './entities/Deployment';
+import {Deployment, PullRequest} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
+import request from 'request-promise-native';
 import * as core from '@actions/core/lib/core';
 
 const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
@@ -14,6 +15,7 @@ const EXECUTION_COMPLETED_STATUSES: Array<string> = [
   'completed',
   'terminated',
 ];
+const GITHUB_BASE_URL = 'https://api.github.com';
 
 async function run() {
   try {
@@ -51,15 +53,18 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
+    const pullRequest: PullRequest = await getRelatedPullRequest();
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
     const properties = {
-      committer: process.env.GITHUB_ACTOR,
-      repositoryAction: process.env.GITHUB_ACTION,
-      repositoryBranchName: process.env.GITHUB_REF,
-      repositoryRevisionNumber: process.env.GITHUB_SHA,
-      repositoryUrl: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
+      triggering_event_name: process.env.GITHUB_EVENT_NAME,
+      repository_commit_username: process.env.GITHUB_ACTOR,
+      repository_action: process.env.GITHUB_ACTION,
+      repository_branch_name: process.env.GITHUB_REF,
+      repository_name: process.env.GITHUB_REPOSITORY,
+      repository_url: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
+      repository_pull_request: pullRequest,
     };
     const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
 
@@ -186,6 +191,42 @@ function getExecutionsStillPending(
       execution.stop_time
     );
   });
+}
+
+function getRelatedPullRequest(): Promise<any> {
+  const targetUrl = `${GITHUB_BASE_URL}/${
+    process.env.GITHUB_REPOSITORY
+  }/commits/${process.env.GITHUB_SHA}/pulls`;
+
+  // TODO add mabl user-agent
+  const postOptions = {
+    method: 'GET',
+    url: targetUrl,
+    headers: {
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github.groot-preview+json',
+      'Content-Type': 'application/json',
+    },
+    json: true,
+  };
+
+  return request(postOptions)
+    .then(response => {
+      if (!response || !response.length) {
+        return;
+      }
+
+      return {
+        title: response[0].title,
+        number: response[0].number,
+        created_at: response[0].created_at,
+        merged_at: response[0].merged_at,
+      };
+    })
+    .catch(error => {
+      console.error(`Insight GitHub Issue creation ERROR: ${id}`);
+      console.error(error.message);
+    });
 }
 
 run();
