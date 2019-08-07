@@ -20,4 +20,4 @@ jobs:
       - name: Do something on failure
         id: check-test-results
         run: exit 1
-        if: ({{ steps.mabl-test-deployment.journey_failures }} > 1)
+        if: (job.steps.mabl-test-deployment.outputs.journey_failures)
