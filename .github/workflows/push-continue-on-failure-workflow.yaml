@@ -24,7 +24,7 @@ jobs:
       - name: echo steps
         run: echo '${{ job.steps }}'
       - name: echo job
-        run: echo ${{ job }}
+        run: echo ${{ toJson(job) }}
       - name: Do something on failure
         id: check-test-results
         run: exit 1
