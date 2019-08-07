@@ -22,7 +22,9 @@ jobs:
       - name: echo outputs
         run: echo ${{ job.steps.mabl-test-deployment.outputs }}
       - name: echo steps
-        run: echo ${{ job.steps }}
+        run: echo '${{ job.steps }}'
+      - name: echo job
+        run: echo ${{ job }}
       - name: Do something on failure
         id: check-test-results
         run: exit 1
