@@ -22,7 +22,7 @@ jobs:
       - name: echo outputs
         run: echo ${{ job.steps.mabl-test-deployment.outputs }}
       - name: echo steps
-        run: echo '${{ job.step }}'
+        run: echo '${{ toJson(steps) }}'
       - name: echo job
         run: echo '${{ toJson(job) }}'
       - name: Do something on failure
