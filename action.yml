@@ -45,7 +45,7 @@ outputs:
   mabl-deployment-id:
     description: "mabl deployment event id"
   plans_run:
-    description: "total number of mabl plans run against this deployment.  A mabl plan is a collection of similarly configured tests."
+    description: "number of mabl plans run against this deployment.  A mabl plan is a collection of similarly configured tests."
   plans_passed:
     description: "number of mabl plans that passed against this deployment.  A mabl plan is a collection of similarly configured tests."
   plans_failed:
