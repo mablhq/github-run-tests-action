@@ -1,6 +1,6 @@
 on: [deployment]
 
-name: mabl
+name: mabl-deploy
 
 jobs:
   test:
