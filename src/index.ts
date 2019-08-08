@@ -224,7 +224,6 @@ function getRelatedPullRequest(): Promise<any> {
       };
     })
     .catch(error => {
-      console.error(`Insight GitHub Issue creation ERROR: ${id}`);
       console.error(error.message);
     });
 }
