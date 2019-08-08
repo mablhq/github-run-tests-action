@@ -17,10 +17,6 @@ jobs:
           application-id: l-j3VqIO6lLLOOEoFTPSxA-a
           environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
         continue-on-error: true
-      - name: echo
-        run: echo ${{ job.steps.mabl-test-deployment.outputs.journeys_failed }}
-      - name: echo outputs
-        run: echo ${{ job.steps.mabl-test-deployment.outputs }}
       - name: echo steps
         run: echo '${{ toJson(steps) }}'
       - name: echo job
@@ -28,4 +24,4 @@ jobs:
       - name: Do something on failure
         id: check-test-results
         run: exit 1
-        if: (steps.mabl-test-deployment.outputs.journeys_failed > 0)
+        if: steps.mabl-test-deployment.outputs.journeys_failed > 0
