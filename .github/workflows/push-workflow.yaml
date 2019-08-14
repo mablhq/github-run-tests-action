@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Install dependencies
+        run: npm install
+      - name: Compile typescript
+        run: npm run build
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
         uses: ./
