@@ -194,7 +194,7 @@ function getExecutionsStillPending(
 }
 
 function getRelatedPullRequest(): Promise<any> {
-  const targetUrl = `${GITHUB_BASE_URL}/${
+  const targetUrl = `${GITHUB_BASE_URL}/repos/${
     process.env.GITHUB_REPOSITORY
   }/commits/${process.env.GITHUB_SHA}/pulls`;
 
