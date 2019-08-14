@@ -7,8 +7,15 @@ Releases are done of of release branches. Each major release version should get
 its own branch, e.g. release_v1.  
 Releases can then be done from that branch by running
 
-`npm run release`
+```bash
+# Compile release
+npm run release
 
-followed by
+# Commit the built release files
+git commit -m "<version, e.g. v1.4> release"
 
-`git tag <version, e.g. v1.4>`
+# Tag the release
+git tag <version, e.g. v1.4>
+```
+
+Once the tag exists, you make a new release from it in the github UI.
