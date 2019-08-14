@@ -1,27 +1,14 @@
 If you would like to contribute, please submit a PR. If you encounter an
 problem, please file an Issue in this repo.
 
-### Making updates
+### Releasing
 
-Actions need the compiled code checked in. This means your changes will only
-take effect if you run the build to generate .js files from the .ts Typescript
-files and check the .js files in as well.
+Releases are done of of release branches. Each major release version should get
+its own branch, e.g. release_v1.  
+Releases can then be done from that branch by running
 
-### Adding new dependencies
+`npm run release`
 
-Check in the Action with everything it needs to run. If you update dependencies
-you will need to commit the changes to Node modules as well.
+followed by
 
-```bash
-# Remove any non-production dependencies
-npm prune --production
-
-# Compile Typescript to ES6
-npm run build
-
-# Add the compiled Typescript output
-git add lib/
-
-# Add Node dependencies
-git add -f node_modules/*
-```
+`git tag <version, e.g. v1.4>`
