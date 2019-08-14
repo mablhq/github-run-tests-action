@@ -206,6 +206,7 @@ function getRelatedPullRequest(): Promise<any> {
       Authorization: `token ${process.env.GITHUB_TOKEN}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
+      'User-Agent': 'mabl-action',
     },
     json: true,
   };
