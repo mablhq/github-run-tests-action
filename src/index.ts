@@ -1,5 +1,9 @@
 import {mablApiClient} from './mablApiClient';
-import {Deployment, PullRequest} from './entities/Deployment';
+import {
+  Deployment,
+  PullRequest,
+  DeploymentProperties,
+} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
@@ -57,19 +61,27 @@ async function run() {
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
-    let properties = {
+    let properties: DeploymentProperties = {
       triggering_event_name: process.env.GITHUB_EVENT_NAME,
       repository_commit_username: process.env.GITHUB_ACTOR,
       repository_action: process.env.GITHUB_ACTION,
       repository_branch_name: process.env.GITHUB_REF,
       repository_name: process.env.GITHUB_REPOSITORY,
       repository_url: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
-      repository_pull_request_url: pullRequest && pullRequest.url,
-      repository_pull_request_number: pullRequest && pullRequest.number,
-      repository_pull_request_title: pullRequest && pullRequest.title,
-      repository_pull_merged_at: pullRequest && pullRequest.merged_at,
-      repository_pull_created_at: pullRequest && pullRequest.created_at,
     };
+
+    if (pullRequest) {
+      properties = Object.assign(properties, {
+        repository_pull_request_url: pullRequest.url,
+        repository_pull_request_number: pullRequest.number,
+        repository_pull_request_title: pullRequest.title,
+        repository_pull_request_created_at: pullRequest.created_at,
+      });
+
+      if (pullRequest.merged_at) {
+        properties.repository_pull_request_merged_at = pullRequest.merged_at;
+      }
+    }
 
     const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
 

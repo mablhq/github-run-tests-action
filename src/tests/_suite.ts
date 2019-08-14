@@ -25,12 +25,13 @@ describe('azure pipeline task tests', function() {
         repository_commit_username: 'gcooney',
         repository_action: 'mabl-tests',
         repository_url: 'git@github.com:mablhq/github-mabl-actions.git',
+        repository_name: 'github-mabl-actions',
         triggering_event_name: 'push',
         repository_pull_request_url: 'https://github.com/mablhq/repo/pr/1',
         repository_pull_request_number: 5,
         repository_pull_request_title: 'good pr',
-        repository_pull_merged_at: '2019',
-        repository_pull_created_at: '2019',
+        repository_pull_request_merged_at: '2019',
+        repository_pull_request_created_at: '2019',
       },
     );
     assert.equal(expected, JSON.stringify(requestBody));
@@ -54,13 +55,14 @@ describe('azure pipeline task tests', function() {
         repository_branch_name: 'master',
         repository_commit_username: 'gcooney',
         repository_action: 'mabl-tests',
+        repository_name: 'github-mabl-actions',
         repository_url: 'git@github.com:mablhq/github-mabl-actions.git',
         triggering_event_name: 'push',
         repository_pull_request_url: 'https://github.com/mablhq/repo/pr/1',
         repository_pull_request_number: 5,
         repository_pull_request_title: 'good pr',
-        repository_pull_merged_at: '2019',
-        repository_pull_created_at: '2019',
+        repository_pull_request_merged_at: '2019',
+        repository_pull_request_created_at: '2019',
       },
     );
     assert.equal(expected, JSON.stringify(requestBody));
