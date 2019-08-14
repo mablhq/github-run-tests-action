@@ -20,7 +20,11 @@ export interface DeploymentProperties {
   repository_action: string | undefined;
   repository_branch_name: string | undefined;
   repository_url: string | undefined;
-  repository_pull_request: PullRequest | undefined;
+  repository_pull_request_url: string | undefined;
+  repository_pull_request_number: number | undefined;
+  repository_pull_request_title: string | undefined;
+  repository_pull_merged_at: string | undefined;
+  repository_pull_created_at: string | undefined;
 }
 
 export interface PullRequest {
@@ -28,4 +32,5 @@ export interface PullRequest {
   number: number | undefined;
   created_at: string | undefined;
   merged_at: string | undefined;
+  url: string | undefined;
 }

@@ -53,19 +53,24 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
-    const pullRequest: PullRequest = await getRelatedPullRequest();
+    const pullRequest: PullRequest | undefined = await getRelatedPullRequest();
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
-    const properties = {
+    let properties = {
       triggering_event_name: process.env.GITHUB_EVENT_NAME,
       repository_commit_username: process.env.GITHUB_ACTOR,
       repository_action: process.env.GITHUB_ACTION,
       repository_branch_name: process.env.GITHUB_REF,
       repository_name: process.env.GITHUB_REPOSITORY,
       repository_url: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
-      repository_pull_request: pullRequest,
+      repository_pull_request_url: pullRequest && pullRequest.url,
+      repository_pull_request_number: pullRequest && pullRequest.number,
+      repository_pull_request_title: pullRequest && pullRequest.title,
+      repository_pull_merged_at: pullRequest && pullRequest.merged_at,
+      repository_pull_created_at: pullRequest && pullRequest.created_at,
     };
+
     const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
 
     // set up http client
@@ -198,14 +203,16 @@ function getRelatedPullRequest(): Promise<any> {
     process.env.GITHUB_REPOSITORY
   }/commits/${process.env.GITHUB_SHA}/pulls`;
 
-  console.log(targetUrl);
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (!githubToken) {
+    return Promise.resolve();
+  }
 
-  // TODO add mabl user-agent
   const postOptions = {
     method: 'GET',
     url: targetUrl,
     headers: {
-      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Authorization: `token ${githubToken}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
       'User-Agent': 'mabl-action',
@@ -224,10 +231,13 @@ function getRelatedPullRequest(): Promise<any> {
         number: response[0].number,
         created_at: response[0].created_at,
         merged_at: response[0].merged_at,
+        url: response[0].url,
       };
     })
     .catch(error => {
-      console.error(error.message);
+      if (error.status != 404) {
+        core.warning(error.message);
+      }
     });
 }
 
