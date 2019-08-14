@@ -198,6 +198,8 @@ function getRelatedPullRequest(): Promise<any> {
     process.env.GITHUB_REPOSITORY
   }/commits/${process.env.GITHUB_SHA}/pulls`;
 
+  console.log(targetUrl);
+
   // TODO add mabl user-agent
   const postOptions = {
     method: 'GET',
