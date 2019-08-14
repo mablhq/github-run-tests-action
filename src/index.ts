@@ -3,7 +3,7 @@ import {Deployment, PullRequest} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
-import * as request from 'request-promise-native';
+import request from 'request-promise-native';
 import * as core from '@actions/core/lib/core';
 
 const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
