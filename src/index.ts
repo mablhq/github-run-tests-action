@@ -1,8 +1,13 @@
 import {mablApiClient} from './mablApiClient';
-import {Deployment} from './entities/Deployment';
+import {
+  Deployment,
+  PullRequest,
+  DeploymentProperties,
+} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyPrintExecution} from './table';
+import request from 'request-promise-native';
 import * as core from '@actions/core/lib/core';
 
 const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
@@ -14,6 +19,7 @@ const EXECUTION_COMPLETED_STATUSES: Array<string> = [
   'completed',
   'terminated',
 ];
+const GITHUB_BASE_URL = 'https://api.github.com';
 
 async function run() {
   try {
@@ -51,16 +57,32 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
+    const pullRequest: PullRequest | undefined = await getRelatedPullRequest();
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
-    const properties = {
-      committer: process.env.GITHUB_ACTOR,
-      repositoryAction: process.env.GITHUB_ACTION,
-      repositoryBranchName: process.env.GITHUB_REF,
-      repositoryRevisionNumber: process.env.GITHUB_SHA,
-      repositoryUrl: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
+    let properties: DeploymentProperties = {
+      triggering_event_name: process.env.GITHUB_EVENT_NAME,
+      repository_commit_username: process.env.GITHUB_ACTOR,
+      repository_action: process.env.GITHUB_ACTION,
+      repository_branch_name: process.env.GITHUB_REF,
+      repository_name: process.env.GITHUB_REPOSITORY,
+      repository_url: `git@github.com:${process.env.GITHUB_REPOSITORY}.git`,
     };
+
+    if (pullRequest) {
+      properties = Object.assign(properties, {
+        repository_pull_request_url: pullRequest.url,
+        repository_pull_request_number: pullRequest.number,
+        repository_pull_request_title: pullRequest.title,
+        repository_pull_request_created_at: pullRequest.created_at,
+      });
+
+      if (pullRequest.merged_at) {
+        properties.repository_pull_request_merged_at = pullRequest.merged_at;
+      }
+    }
+
     const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
 
     // set up http client
@@ -186,6 +208,49 @@ function getExecutionsStillPending(
       execution.stop_time
     );
   });
+}
+
+function getRelatedPullRequest(): Promise<any> {
+  const targetUrl = `${GITHUB_BASE_URL}/repos/${
+    process.env.GITHUB_REPOSITORY
+  }/commits/${process.env.GITHUB_SHA}/pulls`;
+
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (!githubToken) {
+    return Promise.resolve();
+  }
+
+  const postOptions = {
+    method: 'GET',
+    url: targetUrl,
+    headers: {
+      Authorization: `token ${githubToken}`,
+      Accept: 'application/vnd.github.groot-preview+json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'mabl-action',
+    },
+    json: true,
+  };
+
+  return request(postOptions)
+    .then(response => {
+      if (!response || !response.length) {
+        return;
+      }
+
+      return {
+        title: response[0].title,
+        number: response[0].number,
+        created_at: response[0].created_at,
+        merged_at: response[0].merged_at,
+        url: response[0].url,
+      };
+    })
+    .catch(error => {
+      if (error.status != 404) {
+        core.warning(error.message);
+      }
+    });
 }
 
 run();

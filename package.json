@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "tsc && mocha ./tests/_suite.js",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "npm install && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*"
   },
   "author": "mabl",
   "dependencies": {
@@ -14,6 +15,8 @@
     "azure-pipelines-task-lib": "^2.8.0",
     "cli-table3": "^0.5.1",
     "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "typed-rest-client": "^1.2.0",
     "xmlbuilder": "^13.0.0"
   },
@@ -21,6 +24,7 @@
     "@types/async-retry": "^1.4.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
-    "@types/q": "^1.5.2"
+    "@types/q": "^1.5.2",
+    "@types/request-promise-native": "^1.0.16"
   }
 }

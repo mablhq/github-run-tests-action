@@ -63,3 +63,5 @@ typings/
 # swap files
 *.swp
 
+#compiled js
+lib/*.js
