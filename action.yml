@@ -1,8 +1,8 @@
 name: "Run mabl tests"
 description: "Register a deployment event with mabl and run associated tests"
 branding:
-  icon: "icons/mabl_logo_196px.svg"
-  color: "#6a67ce"
+  icon: play-circle
+  color: white
 inputs:
   application-id:
     description: ^
