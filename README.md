@@ -53,16 +53,19 @@ jobs:
   Use the
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
   to find the id.
-- `browser-types` (optional): override for browser types to test e.g.
-  `chrome, firefox, safari, internet_explorer`. If not provided, mabl will test
-  the browsers configured on the triggered test.
+- `browser-types` {string} {optional}: comma seperated override for browser
+  types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
+  provided, mabl will test the browsers configured on the triggered test.
+- 'uri' {string} {optional} the base uri to test against. If provided, this will
+  override the default uri associated with the environment in mabl
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
-- `set-static-baseline` (optional) - Set `true` to use current deployment as an
-  exact static baseline. If set, mabl will **not** model dynamic areas and will
-  use the current deployment as the pixel-exact visual baseline.
-- `continue-on-failure` (optional) - Set to true to continue the build even if
-  there are test failures
+- `set-static-baseline` {boolean} {optional} - Set `true` to use current
+  deployment as an exact static baseline. If set, mabl will **not** model
+  dynamic areas and will use the current deployment as the pixel-exact visual
+  baseline.
+- `continue-on-failure` {boolean} {optional} - Set to true to continue the build
+  even if there are test failures
 - `event-time` {int64} (optional) - Event time the deployment occurred in UTC
   epoch milliseconds. Defaults to now.
 

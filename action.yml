@@ -21,6 +21,11 @@ inputs:
       'override for the browser types to test.  If not provided, mabl will test
       the browsers configured on the triggered test plans.'
     required: false
+  uri:
+    description: ^
+      'the base uri to test against.  If provided, this will override the default uri
+      associated with the environment in mabl'
+    required: false
   rebaseline-images:
     description: ^
       'Set to true to reset the visual baseline to the current deployment'
