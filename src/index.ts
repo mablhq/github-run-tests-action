@@ -110,9 +110,7 @@ async function run() {
       let application: Application = await apiClient.getApplication(
         applicationId,
       );
-      outputLink = `${baseApiUrl}/workspaces/${
-        application.organization_id
-      }/events/${deployment.id}`;
+      outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
       core.debug(`Deployment triggered. View output at: ${outputLink}`);
     }
 
@@ -161,31 +159,27 @@ async function run() {
     );
     core.setOutput(
       'journeys_run',
-      '' + finalExecutionResult.plan_execution_metrics.total,
+      '' + finalExecutionResult.journey_execution_metrics.total,
     );
     core.setOutput(
       'journeys_passed',
-      '' + finalExecutionResult.plan_execution_metrics.passed,
+      '' + finalExecutionResult.journey_execution_metrics.passed,
     );
     core.setOutput(
       'journeys_failed',
-      '' + finalExecutionResult.plan_execution_metrics.failed,
+      '' + finalExecutionResult.journey_execution_metrics.failed,
     );
 
-    if (finalExecutionResult.plan_execution_metrics.failed === 0) {
+    if (finalExecutionResult.journey_execution_metrics.failed === 0) {
       core.debug('Deployment plans passed');
     } else if (continueOnPlanFailure) {
       core.warning(
-        `There were ${
-          finalExecutionResult.journey_execution_metrics.failed
-        } journey failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
+        `There were ${finalExecutionResult.journey_execution_metrics.failed} journey failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
       );
-      core.setNeutral();
+      // core.setNeutral();  Todo  Set neutral when support is added to actions v2
     } else {
       core.setFailed(
-        `${
-          finalExecutionResult.journey_execution_metrics.failed
-        } mabl Journey(s) failed`,
+        `${finalExecutionResult.journey_execution_metrics.failed} mabl Journey(s) failed`,
       );
     }
   } catch (err) {
@@ -211,9 +205,7 @@ function getExecutionsStillPending(
 }
 
 function getRelatedPullRequest(): Promise<any> {
-  const targetUrl = `${GITHUB_BASE_URL}/repos/${
-    process.env.GITHUB_REPOSITORY
-  }/commits/${process.env.GITHUB_SHA}/pulls`;
+  const targetUrl = `${GITHUB_BASE_URL}/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`;
 
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
