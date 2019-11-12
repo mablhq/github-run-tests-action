@@ -10,7 +10,7 @@
   },
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "file:toolkit/actions-core-0.0.0.tgz",
+    "@actions/core": "^1.2.0",
     "async-retry": "^1.2.3",
     "azure-pipelines-task-lib": "^2.8.0",
     "cli-table3": "^0.5.1",
