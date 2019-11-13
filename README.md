@@ -78,9 +78,8 @@ jobs:
   deployment. A mabl plan is a collection of similarly configured tests.
 - `plans_failed` {int32} - number of mabl plans that failed against this
   deployment. A mabl plan is a collection of similarly configured tests.
-- `journeys_run` {int32} - total number of mabl journeys run against this
-  deployment. A mabl journey is an end to end test of your application.
-- `journeys_passed` {int32} - number of mabl journeys that passed against this
-  deployment. A mabl journey is an end to end test of your application.
-- `journeys_failed` {int32} - number of mabl journeys that failed against this
-  deployment. A mabl journey is an end to end test of your application.
+- `tests_run` {int32} - total number of mabl tests run against this deployment.
+- `tests_passed` {int32} - number of mabl tests that passed against this
+  deployment.
+- `tests_failed` {int32} - number of mabl tests that failed against this
+  deployment.
