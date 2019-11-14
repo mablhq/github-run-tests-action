@@ -25,8 +25,8 @@ export function prettyPrintExecution(execution: Execution) {
     execution.plan.app_href,
   ]);
 
-  let journeyTable = new Table({
-    head: ['Browser', 'Status', 'Journey Name', 'Duration', 'mabl App Link'],
+  let testTable = new Table({
+    head: ['Browser', 'Status', 'Test Name', 'Duration', 'mabl App Link'],
     style: {
       head: [],
       border: [],
@@ -35,20 +35,20 @@ export function prettyPrintExecution(execution: Execution) {
     wordWrap: true,
   }) as HorizontalTable;
   execution.journey_executions.forEach(jE => {
-    let journey: JourneyInfo | undefined = execution.journeys.find(
-      journey => journey.id === jE.journey_id,
+    let test: JourneyInfo | undefined = execution.journeys.find(
+      test => test.id === jE.journey_id,
     );
-    journeyTable.push([
+    testTable.push([
       jE.browser_type,
       jE.success ? 'Passed' : 'Failed',
-      journey ? journey.name : jE.journey_id,
+      test ? test.name : jE.journey_id,
       moment.utc(jE.stop_time - jE.start_time).format('HH:mm:ss'),
       jE.app_href,
     ]);
   });
 
   outputTable(planTable);
-  outputTable(journeyTable);
+  outputTable(testTable);
 }
 
 function outputTable(table: HorizontalTable) {

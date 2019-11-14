@@ -158,15 +158,15 @@ async function run() {
       '' + finalExecutionResult.plan_execution_metrics.failed,
     );
     core.setOutput(
-      'journeys_run',
+      'tests_run',
       '' + finalExecutionResult.journey_execution_metrics.total,
     );
     core.setOutput(
-      'journeys_passed',
+      'tests_passed',
       '' + finalExecutionResult.journey_execution_metrics.passed,
     );
     core.setOutput(
-      'journeys_failed',
+      'tests_failed',
       '' + finalExecutionResult.journey_execution_metrics.failed,
     );
 
@@ -174,12 +174,12 @@ async function run() {
       core.debug('Deployment plans passed');
     } else if (continueOnPlanFailure) {
       core.warning(
-        `There were ${finalExecutionResult.journey_execution_metrics.failed} journey failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
+        `There were ${finalExecutionResult.journey_execution_metrics.failed} test failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
       );
       // core.setNeutral();  Todo  Set neutral when support is added to actions v2
     } else {
       core.setFailed(
-        `${finalExecutionResult.journey_execution_metrics.failed} mabl Journey(s) failed`,
+        `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
       );
     }
   } catch (err) {
