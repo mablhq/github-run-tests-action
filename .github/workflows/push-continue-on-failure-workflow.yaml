@@ -1,0 +1,27 @@
+on: [push]
+
+name: mabl
+
+jobs:
+  test:
+    name: Mabl Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run mabl tests against deployment
+        id: mabl-test-deployment
+        uses: ./
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+        with:
+          application-id: l-j3VqIO6lLLOOEoFTPSxA-a
+          environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
+        continue-on-error: true
+      - name: echo steps
+        run: echo '${{ toJson(steps) }}'
+      - name: echo job
+        run: echo '${{ toJson(job) }}'
+      - name: Do something on failure
+        id: check-test-results
+        run: exit 1
+        if: steps.mabl-test-deployment.outputs.journeys_failed > 0
