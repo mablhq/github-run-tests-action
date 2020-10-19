@@ -56,7 +56,7 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
-    const pullRequest: PullRequest | undefined = await getRelatedPullRequest();
+    const pullRequest = await getRelatedPullRequest();
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
@@ -83,15 +83,16 @@ async function run() {
     }
 
     const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
-
-    // set up http client
-    let apiClient: mablApiClient = new mablApiClient(apiKey);
     const revision = process.env.GITHUB_SHA;
 
+    core.info(`Using git revision [${revision}]`);
     core.endGroup();
 
-    // send the deployment
     core.startGroup('Creating deployment event');
+    // set up http client
+    let apiClient: mablApiClient = new mablApiClient(apiKey);
+
+    // send the deployment
     let deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
@@ -233,7 +234,7 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   const client = axios.create(config);
 
   try {
-    const response = await client.get<PullRequest[]>(targetUrl, config)
+    const response = await client.get<PullRequest[]>(targetUrl, config);
     return response?.data?.[0];
 
   } catch (error) {
