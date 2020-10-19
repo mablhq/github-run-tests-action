@@ -18,7 +18,7 @@ describe('azure pipeline task tests', function() {
       'uri',
       true,
       true,
-      'abcs',
+
       0,
       {
         repository_branch_name: 'master',
@@ -33,6 +33,7 @@ describe('azure pipeline task tests', function() {
         repository_pull_request_merged_at: '2019',
         repository_pull_request_created_at: '2019',
       },
+      'abcs',
     );
     assert.equal(expected, JSON.stringify(requestBody));
     done();
@@ -49,7 +50,7 @@ describe('azure pipeline task tests', function() {
       'uri',
       false,
       false,
-      'abcs',
+
       0,
       {
         repository_branch_name: 'master',
@@ -64,6 +65,7 @@ describe('azure pipeline task tests', function() {
         repository_pull_request_merged_at: '2019',
         repository_pull_request_created_at: '2019',
       },
+      'abcs',
     );
     assert.equal(expected, JSON.stringify(requestBody));
     done();

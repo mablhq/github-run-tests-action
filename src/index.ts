@@ -223,7 +223,7 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   const client = axios.create(config);
 
   try {
-    const response = await client.get<PullRequest>(targetUrl, config)
+    const response = await client.get<PullRequest[]>(targetUrl, config)
     return response?.data?.[0];
 
   } catch (error) {
