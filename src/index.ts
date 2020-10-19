@@ -7,9 +7,9 @@ import {prettyFormatExecution} from './table';
 import * as core from '@actions/core/lib/core';
 import {Option} from './interfaces';
 
-const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
-const EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
-const EXECUTION_COMPLETED_STATUSES: Array<string> = [
+const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
+const EXECUTION_POLL_INTERVAL_MILLIS = 10000;
+const EXECUTION_COMPLETED_STATUSES = [
   'succeeded',
   'failed',
   'cancelled',
@@ -91,7 +91,7 @@ async function run() {
     core.endGroup();
 
     // send the deployment
-    core.startGroup('Creating Deployment');
+    core.startGroup('Creating deployment event');
     let deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
@@ -113,8 +113,9 @@ async function run() {
       );
       outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
       core.info(`Deployment triggered. View output at: ${outputLink}`);
-      core.debug(`Deployment triggered. View output at: ${outputLink}`);
     }
+
+    core.startGroup('Await completion of tests');
 
     // poll Execution result until complete
     let executionComplete: boolean = false;
@@ -132,16 +133,16 @@ async function run() {
         if (pendingExecutions.length === 0) {
           executionComplete = true;
         } else {
-          core.debug(
+          core.info(
             `${pendingExecutions.length} mabl plan(s) are still running`,
           );
         }
       }
     }
+    core.info('mabl deployment runs have completed');
     core.endGroup();
 
     core.startGroup('Fetch execution results');
-    core.debug('mabl deployment runs have completed');
     let finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
       deployment.id,
     );
