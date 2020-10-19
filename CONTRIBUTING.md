@@ -20,3 +20,5 @@ git push origin <version, e.g. v1.4>
 ```
 
 Once the tag exists, you make a new release from it in the github UI.
+
+Repeat the tagging process (no release needed) for the major version (e.g. `v1`) and delete/replace this tag, allowing users to peg against the major version in workflows and automatically get updates.
