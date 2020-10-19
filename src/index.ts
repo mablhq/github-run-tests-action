@@ -20,6 +20,8 @@ const GITHUB_BASE_URL = 'https://api.github.com';
 
 async function run() {
   try {
+
+    core.startGroup('Gathering inputs');
     const applicationId: string = core.getInput('application-id', {
       required: false,
     });
@@ -80,14 +82,16 @@ async function run() {
       }
     }
 
-    const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
+    const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
 
     // set up http client
     let apiClient: mablApiClient = new mablApiClient(apiKey);
     const revision = process.env.GITHUB_SHA;
 
+    core.endGroup();
+
     // send the deployment
-    core.debug('Creating Deployment');
+    core.startGroup('Creating Deployment');
     let deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
@@ -108,6 +112,7 @@ async function run() {
         applicationId,
       );
       outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
+      core.info(`Deployment triggered. View output at: ${outputLink}`);
       core.debug(`Deployment triggered. View output at: ${outputLink}`);
     }
 
@@ -133,14 +138,16 @@ async function run() {
         }
       }
     }
+    core.endGroup();
+
+    core.startGroup('Fetch execution results');
     core.debug('mabl deployment runs have completed');
     let finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
       deployment.id,
     );
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
-      core.setOutput(
-        'executions',
+      core.info(
         prettyFormatExecution(execution)
       );
     });
@@ -182,6 +189,8 @@ async function run() {
         `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
       );
     }
+    core.endGroup();
+
   } catch (err) {
     core.setFailed(
       `mabl deployment task failed for the following reason: ${err}`,
