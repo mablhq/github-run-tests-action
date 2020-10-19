@@ -1,14 +1,11 @@
+import axios, {AxiosRequestConfig} from 'axios';
 import {mablApiClient} from './mablApiClient';
-import {
-  Deployment,
-  PullRequest,
-  DeploymentProperties,
-} from './entities/Deployment';
+import {Deployment, DeploymentProperties, PullRequest} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
-import {prettyPrintExecution} from './table';
-import request from 'request-promise-native';
+import {prettyFormatExecution} from './table';
 import * as core from '@actions/core/lib/core';
+import {Option} from './interfaces';
 
 const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
@@ -142,7 +139,10 @@ async function run() {
     );
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
-      prettyPrintExecution(execution);
+      core.setOutput(
+        'executions',
+        prettyFormatExecution(execution)
+      );
     });
 
     core.setOutput(
@@ -190,7 +190,7 @@ async function run() {
 }
 
 function parseBoolean(toParse: string): boolean {
-  return !!(toParse && toParse.toLowerCase() == 'true');
+  return toParse?.toLowerCase() === 'true';
 }
 
 function getExecutionsStillPending(
@@ -204,45 +204,33 @@ function getExecutionsStillPending(
   });
 }
 
-function getRelatedPullRequest(): Promise<any> {
+async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   const targetUrl = `${GITHUB_BASE_URL}/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`;
 
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
-    return Promise.resolve();
+    return;
   }
 
-  const postOptions = {
-    method: 'GET',
-    url: targetUrl,
+  const config: AxiosRequestConfig = {
     headers: {
       Authorization: `token ${githubToken}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
       'User-Agent': 'mabl-action',
     },
-    json: true,
   };
+  const client = axios.create(config);
 
-  return request(postOptions)
-    .then(response => {
-      if (!response || !response.length) {
-        return;
-      }
+  try {
+    const response = await client.get<PullRequest>(targetUrl, config)
+    return response?.data?.[0];
 
-      return {
-        title: response[0].title,
-        number: response[0].number,
-        created_at: response[0].created_at,
-        merged_at: response[0].merged_at,
-        url: response[0].url,
-      };
-    })
-    .catch(error => {
-      if (error.status != 404) {
-        core.warning(error.message);
-      }
-    });
+  } catch (error) {
+    if (error.status != 404) {
+      core.warning(error.message);
+    }
+  }
 }
 
 run();

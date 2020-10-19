@@ -1,6 +1,6 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "0.0.1",
+  "version": "1.6.0",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/index.js",
   "scripts": {
@@ -12,20 +12,15 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "async-retry": "^1.2.3",
-    "azure-pipelines-task-lib": "^2.8.0",
+    "axios": "^0.20.0",
     "cli-table3": "^0.5.1",
-    "moment": "^2.24.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "typed-rest-client": "^1.2.0",
-    "xmlbuilder": "^13.0.0"
+    "moment": "^2.24.0"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
-    "@types/q": "^1.5.2",
-    "@types/request-promise-native": "^1.0.16",
+    "mocha": "^8.2.0",
     "typescript": "^4.0.3"
   }
 }
