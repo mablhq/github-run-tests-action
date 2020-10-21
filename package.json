@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "tsc && mocha ./lib/tests/_suite.js",
-    "build": "tsc --outDir lib/",
+    "build": "tsc",
     "release": "npm install && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*",
     "fix:prettier": "prettier --write 'src/**/*.ts'",
     "fix:eslint": "eslint 'src/**/*.ts' --fix",
