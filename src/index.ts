@@ -1,18 +1,19 @@
-import {mablApiClient} from './mablApiClient';
+import axios, {AxiosRequestConfig} from 'axios';
+import {MablApiClient} from './mablApiClient';
 import {
   Deployment,
-  PullRequest,
   DeploymentProperties,
+  PullRequest,
 } from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
-import {prettyPrintExecution} from './table';
-import request from 'request-promise-native';
+import {prettyFormatExecution} from './table';
 import * as core from '@actions/core/lib/core';
+import {Option} from './interfaces';
 
-const DEFAULT_MABL_APP_URL: string = 'https://app.mabl.com';
-const EXECUTION_POLL_INTERVAL_MILLIS: number = 10000;
-const EXECUTION_COMPLETED_STATUSES: Array<string> = [
+const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
+const EXECUTION_POLL_INTERVAL_MILLIS = 10000;
+const EXECUTION_COMPLETED_STATUSES = [
   'succeeded',
   'failed',
   'cancelled',
@@ -21,8 +22,9 @@ const EXECUTION_COMPLETED_STATUSES: Array<string> = [
 ];
 const GITHUB_BASE_URL = 'https://api.github.com';
 
-async function run() {
+async function run(): Promise<void> {
   try {
+    core.startGroup('Gathering inputs');
     const applicationId: string = core.getInput('application-id', {
       required: false,
     });
@@ -57,7 +59,7 @@ async function run() {
       core.getInput('continue-on-failure', {required: false}),
     );
 
-    const pullRequest: PullRequest | undefined = await getRelatedPullRequest();
+    const pullRequest = await getRelatedPullRequest();
     const eventTimeString = core.getInput('event-time', {required: false});
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
@@ -83,15 +85,18 @@ async function run() {
       }
     }
 
-    const baseApiUrl = process.env.APP_URL || DEFAULT_MABL_APP_URL;
-
-    // set up http client
-    let apiClient: mablApiClient = new mablApiClient(apiKey);
+    const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
     const revision = process.env.GITHUB_SHA;
 
+    core.info(`Using git revision [${revision}]`);
+    core.endGroup();
+
+    core.startGroup('Creating deployment event');
+    // set up http client
+    const apiClient: MablApiClient = new MablApiClient(apiKey);
+
     // send the deployment
-    core.debug('Creating Deployment');
-    let deployment: Deployment = await apiClient.postDeploymentEvent(
+    const deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
       browserTypes,
@@ -107,42 +112,48 @@ async function run() {
 
     let outputLink: string = baseApiUrl;
     if (applicationId) {
-      let application: Application = await apiClient.getApplication(
+      const application: Application = await apiClient.getApplication(
         applicationId,
       );
       outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
-      core.debug(`Deployment triggered. View output at: ${outputLink}`);
+      core.info(`Deployment triggered. View output at: ${outputLink}`);
     }
 
+    core.startGroup('Await completion of tests');
+
     // poll Execution result until complete
-    let executionComplete: boolean = false;
+    let executionComplete = false;
     while (!executionComplete) {
-      await new Promise(resolve =>
+      await new Promise((resolve) =>
+        // eslint-disable-next-line no-restricted-globals
         setTimeout(resolve, EXECUTION_POLL_INTERVAL_MILLIS),
       );
-      let executionResult: ExecutionResult = await apiClient.getExecutionResults(
+      const executionResult: ExecutionResult = await apiClient.getExecutionResults(
         deployment.id,
       );
-      if (executionResult && executionResult.executions) {
-        let pendingExecutions: Array<Execution> = getExecutionsStillPending(
+      if (executionResult?.executions) {
+        const pendingExecutions: Execution[] = getExecutionsStillPending(
           executionResult,
         );
         if (pendingExecutions.length === 0) {
           executionComplete = true;
         } else {
-          core.debug(
+          core.info(
             `${pendingExecutions.length} mabl plan(s) are still running`,
           );
         }
       }
     }
-    core.debug('mabl deployment runs have completed');
-    let finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
+    core.info('mabl deployment runs have completed');
+    core.endGroup();
+
+    core.startGroup('Fetch execution results');
+    const finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
       deployment.id,
     );
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
-      prettyPrintExecution(execution);
+      core.info(prettyFormatExecution(execution));
     });
 
     core.setOutput(
@@ -182,6 +193,7 @@ async function run() {
         `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
       );
     }
+    core.endGroup();
   } catch (err) {
     core.setFailed(
       `mabl deployment task failed for the following reason: ${err}`,
@@ -190,12 +202,12 @@ async function run() {
 }
 
 function parseBoolean(toParse: string): boolean {
-  return !!(toParse && toParse.toLowerCase() == 'true');
+  return toParse?.toLowerCase() === 'true';
 }
 
 function getExecutionsStillPending(
   executionResult: ExecutionResult,
-): Array<Execution> {
+): Execution[] {
   return executionResult.executions.filter((execution: Execution) => {
     return !(
       EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
@@ -204,45 +216,35 @@ function getExecutionsStillPending(
   });
 }
 
-function getRelatedPullRequest(): Promise<any> {
+async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   const targetUrl = `${GITHUB_BASE_URL}/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`;
 
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
-    return Promise.resolve();
+    return;
   }
 
-  const postOptions = {
-    method: 'GET',
-    url: targetUrl,
+  const config: AxiosRequestConfig = {
     headers: {
       Authorization: `token ${githubToken}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
       'User-Agent': 'mabl-action',
     },
-    json: true,
   };
+  const client = axios.create(config);
 
-  return request(postOptions)
-    .then(response => {
-      if (!response || !response.length) {
-        return;
-      }
+  try {
+    const response = await client.get<PullRequest[]>(targetUrl, config);
+    return response?.data?.[0];
+  } catch (error) {
+    if (error.status !== 404) {
+      core.warning(error.message);
+    }
+  }
 
-      return {
-        title: response[0].title,
-        number: response[0].number,
-        created_at: response[0].created_at,
-        merged_at: response[0].merged_at,
-        url: response[0].url,
-      };
-    })
-    .catch(error => {
-      if (error.status != 404) {
-        core.warning(error.message);
-      }
-    });
+  return;
 }
 
+// eslint-disable-next-line
 run();
