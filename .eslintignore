@@ -1,5 +1,2 @@
-/mabl-cli-build*
 /lib/**
-/src/lib/*.generated.d.ts
-webpack*.config.js
 *.d.ts
