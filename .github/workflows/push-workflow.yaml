@@ -12,11 +12,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Apply checks
+      - name: Run checks
         run: npm run check
 
       - name: Compile Typescript
         run: npm run build
+
+      - name: Run Tests
+        run: npm test
 
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
