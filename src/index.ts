@@ -1,6 +1,10 @@
 import axios, {AxiosRequestConfig} from 'axios';
-import {mablApiClient} from './mablApiClient';
-import {Deployment, DeploymentProperties, PullRequest} from './entities/Deployment';
+import {MablApiClient} from './mablApiClient';
+import {
+  Deployment,
+  DeploymentProperties,
+  PullRequest,
+} from './entities/Deployment';
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyFormatExecution} from './table';
@@ -18,9 +22,8 @@ const EXECUTION_COMPLETED_STATUSES = [
 ];
 const GITHUB_BASE_URL = 'https://api.github.com';
 
-async function run() {
+async function run(): Promise<void> {
   try {
-
     core.startGroup('Gathering inputs');
     const applicationId: string = core.getInput('application-id', {
       required: false,
@@ -90,10 +93,10 @@ async function run() {
 
     core.startGroup('Creating deployment event');
     // set up http client
-    let apiClient: mablApiClient = new mablApiClient(apiKey);
+    const apiClient: MablApiClient = new MablApiClient(apiKey);
 
     // send the deployment
-    let deployment: Deployment = await apiClient.postDeploymentEvent(
+    const deployment: Deployment = await apiClient.postDeploymentEvent(
       applicationId,
       environmentId,
       browserTypes,
@@ -109,7 +112,7 @@ async function run() {
 
     let outputLink: string = baseApiUrl;
     if (applicationId) {
-      let application: Application = await apiClient.getApplication(
+      const application: Application = await apiClient.getApplication(
         applicationId,
       );
       outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
@@ -119,16 +122,17 @@ async function run() {
     core.startGroup('Await completion of tests');
 
     // poll Execution result until complete
-    let executionComplete: boolean = false;
+    let executionComplete = false;
     while (!executionComplete) {
-      await new Promise(resolve =>
+      await new Promise((resolve) =>
+        // eslint-disable-next-line no-restricted-globals
         setTimeout(resolve, EXECUTION_POLL_INTERVAL_MILLIS),
       );
-      let executionResult: ExecutionResult = await apiClient.getExecutionResults(
+      const executionResult: ExecutionResult = await apiClient.getExecutionResults(
         deployment.id,
       );
-      if (executionResult && executionResult.executions) {
-        let pendingExecutions: Array<Execution> = getExecutionsStillPending(
+      if (executionResult?.executions) {
+        const pendingExecutions: Execution[] = getExecutionsStillPending(
           executionResult,
         );
         if (pendingExecutions.length === 0) {
@@ -144,14 +148,12 @@ async function run() {
     core.endGroup();
 
     core.startGroup('Fetch execution results');
-    let finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
+    const finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
       deployment.id,
     );
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
-      core.info(
-        prettyFormatExecution(execution)
-      );
+      core.info(prettyFormatExecution(execution));
     });
 
     core.setOutput(
@@ -192,7 +194,6 @@ async function run() {
       );
     }
     core.endGroup();
-
   } catch (err) {
     core.setFailed(
       `mabl deployment task failed for the following reason: ${err}`,
@@ -206,7 +207,7 @@ function parseBoolean(toParse: string): boolean {
 
 function getExecutionsStillPending(
   executionResult: ExecutionResult,
-): Array<Execution> {
+): Execution[] {
   return executionResult.executions.filter((execution: Execution) => {
     return !(
       EXECUTION_COMPLETED_STATUSES.includes(execution.status) &&
@@ -236,12 +237,14 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   try {
     const response = await client.get<PullRequest[]>(targetUrl, config);
     return response?.data?.[0];
-
   } catch (error) {
-    if (error.status != 404) {
+    if (error.status !== 404) {
       core.warning(error.message);
     }
   }
+
+  return;
 }
 
+// eslint-disable-next-line
 run();

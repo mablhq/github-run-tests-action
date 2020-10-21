@@ -1,12 +1,9 @@
 import {Execution, JourneyInfo} from './entities/ExecutionResult';
-import Table from 'cli-table3';
-import {HorizontalTable} from 'cli-table3';
+import Table, {HorizontalTable} from 'cli-table3';
 import * as moment from 'moment';
-import * as core from '@actions/core/lib/core';
 import {Option} from './interfaces';
 
 export function prettyFormatExecution(execution: Execution): string {
-
   let outputString = '';
 
   const planTable = new Table({
@@ -40,16 +37,18 @@ export function prettyFormatExecution(execution: Execution): string {
     wordWrap: true,
   }) as HorizontalTable;
 
-  execution.journey_executions.forEach(journeyExecution => {
-    const  test: Option<JourneyInfo> = execution.journeys.find(
-      test => test.id === journeyExecution.journey_id,
+  execution.journey_executions.forEach((journeyExecution) => {
+    const test: Option<JourneyInfo> = execution.journeys.find(
+      (test) => test.id === journeyExecution.journey_id,
     );
 
     testTable.push([
       journeyExecution.browser_type,
       journeyExecution.success ? 'Passed' : 'Failed',
       test ? test.name : journeyExecution.journey_id,
-      moment.utc(journeyExecution.stop_time - journeyExecution.start_time).format('HH:mm:ss'),
+      moment
+        .utc(journeyExecution.stop_time - journeyExecution.start_time)
+        .format('HH:mm:ss'),
       journeyExecution.app_href,
     ]);
   });

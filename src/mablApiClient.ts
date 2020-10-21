@@ -4,9 +4,10 @@ import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
 
-export class mablApiClient {
+export class MablApiClient {
   private readonly httpClient: AxiosInstance;
-  private readonly baseUrl: string = process.env.APP_URL ?? 'https://api.mabl.com';
+  private readonly baseUrl: string =
+    process.env.APP_URL ?? 'https://api.mabl.com';
 
   constructor(apiKey: string) {
     const config: AxiosRequestConfig = {
@@ -17,27 +18,21 @@ export class mablApiClient {
       },
       auth: {
         username: 'key',
-        password: apiKey
-      }
+        password: apiKey,
+      },
     };
 
     this.httpClient = axios.create(config);
   }
 
   async makeGetRequest<T>(url: string): Promise<T> {
-    return await retry(
+    return retry(
       async () => {
-        const response = await this.httpClient.get<T>(
-          url
-        );
+        const response = await this.httpClient.get<T>(url);
         if ((response.status ?? 400) >= 400) {
-          throw `[${response.status} - ${
-            response.statusText
-          }]`;
+          throw new Error(`[${response.status} - ${response.statusText}]`);
         }
-        // noinspection UnnecessaryLocalVariableJS
-        const payload = await response.data; // await to force error capture here
-        return payload;
+        return response.data;
       },
       {
         retries: 3,
@@ -46,20 +41,16 @@ export class mablApiClient {
   }
 
   async makePostRequest<T>(url: string, requestBody: object): Promise<T> {
-    return await retry(
+    return retry(
       async () => {
         const response = await this.httpClient.post(
           url,
           JSON.stringify(requestBody),
         );
-        if ((response.status ??    400) >= 400) {
-          throw `[${response.status} - ${
-            response.statusText
-          }]`;
+        if ((response.status ?? 400) >= 400) {
+          throw new Error(`[${response.status} - ${response.statusText}]`);
         }
-        // noinspection UnnecessaryLocalVariableJS
-        const payload = await response.data; // await to force error capture here
-        return payload;
+        return response.data;
       },
       {
         retries: 3,
@@ -73,7 +64,9 @@ export class mablApiClient {
         `${this.baseUrl}/v1/applications/${applicationId}`,
       );
     } catch (error) {
-      throw `failed to get mabl application ($applicationId) from the API ${error}`;
+      throw new Error(
+        `failed to get mabl application ($applicationId) from the API ${error}`,
+      );
     }
   }
 
@@ -83,7 +76,9 @@ export class mablApiClient {
         `${this.baseUrl}/execution/result/event/${eventId}`,
       );
     } catch (error) {
-      throw `failed to get mabl execution results for event ${eventId} from the API ${error}`;
+      throw new Error(
+        `failed to get mabl execution results for event ${eventId} from the API ${error}`,
+      );
     }
   }
 
@@ -99,7 +94,6 @@ export class mablApiClient {
     properties: DeploymentProperties,
   ): Promise<Deployment> {
     try {
-
       const requestBody: any = this.buildRequestBody(
         applicationId,
         environmentId,
@@ -116,7 +110,7 @@ export class mablApiClient {
         requestBody,
       );
     } catch (e) {
-      throw `failed to create deployment through mabl API ${e}`;
+      throw new Error(`failed to create deployment through mabl API ${e}`);
     }
   }
 
@@ -133,26 +127,39 @@ export class mablApiClient {
   ): any {
     const requestBody: any = {};
 
-    environmentId ? (requestBody.environment_id = environmentId) : null;
-    applicationId ? (requestBody.application_id = applicationId) : null;
+    if (environmentId) {
+      requestBody.environment_id = environmentId;
+    }
+    if (applicationId) {
+      requestBody.application_id = applicationId;
+    }
 
     const planOverrides: any = {};
-    browserTypes
-      ? (planOverrides.browser_types = browserTypes.split(','))
-      : null;
-    uri ? (planOverrides.uri = uri) : null;
+    if (browserTypes) {
+      planOverrides.browser_types = browserTypes.split(',');
+    }
+    if (uri) {
+      planOverrides.uri = uri;
+    }
     requestBody.plan_overrides = planOverrides;
 
-    revision ? (requestBody.revision = revision) : null;
-    event_time ? (requestBody.event_time = event_time) : null;
-    properties ? (requestBody.properties = properties) : null;
-
+    if (revision) {
+      requestBody.revision = revision;
+    }
+    if (event_time) {
+      requestBody.event_time = event_time;
+    }
+    if (properties) {
+      requestBody.properties = properties;
+    }
 
     const actions: any = {};
-    rebaselineImages ? (actions.rebaseline_images = rebaselineImages) : null;
-    setStaticBaseline
-      ? (actions.set_static_baseline = setStaticBaseline)
-      : null;
+    if (rebaselineImages) {
+      actions.rebaseline_images = rebaselineImages;
+    }
+    if (setStaticBaseline) {
+      actions.set_static_baseline = setStaticBaseline;
+    }
     requestBody.actions = actions;
     return requestBody;
   }
