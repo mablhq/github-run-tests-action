@@ -6,7 +6,7 @@
   "scripts": {
     "test": "tsc && mocha ./lib/tests/_suite.js",
     "build": "tsc",
-    "release": "npm install && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*",
+    "release": "npm ci && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*",
     "fix:prettier": "prettier --write 'src/**/*.ts'",
     "fix:eslint": "eslint 'src/**/*.ts' --fix",
     "fix": "npm run fix:eslint && npm run fix:prettier",
