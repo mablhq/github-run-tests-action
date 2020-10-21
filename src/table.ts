@@ -54,6 +54,7 @@ export function prettyFormatExecution(execution: Execution): string {
   });
 
   outputString += outputTable(planTable);
+  outputString += '\n'; // prevent offset table row in output
   outputString += outputTable(testTable);
 
   return outputString;
