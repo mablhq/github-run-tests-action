@@ -15,8 +15,8 @@ export interface Execution {
   success: boolean;
   plan: PlanInfo;
   plan_execution: PlanExecution;
-  journeys: Array<JourneyInfo>;
-  journey_executions: Array<JourneyExecution>;
+  journeys: JourneyInfo[];
+  journey_executions: JourneyExecution[];
   start_time: number;
   stop_time: number;
 }
@@ -60,5 +60,5 @@ interface JourneyExecution {
 export interface ExecutionResult {
   plan_execution_metrics: PlanExecutionMetrics;
   journey_execution_metrics: JourneyExecutionMetrics;
-  executions: Array<Execution>;
+  executions: Execution[];
 }

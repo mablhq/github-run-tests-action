@@ -1,30 +1,39 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "0.0.1",
+  "version": "1.6.0",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tsc && mocha ./tests/_suite.js",
+    "test": "tsc && mocha ./lib/tests/_suite.js",
     "build": "tsc",
-    "release": "npm install && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*"
+    "release": "npm install && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*",
+    "fix:prettier": "prettier --write 'src/**/*.ts'",
+    "fix:eslint": "eslint 'src/**/*.ts' --fix",
+    "fix": "npm run fix:eslint && npm run fix:prettier",
+    "check:prettier": "prettier --check 'src/**/*.ts'",
+    "check:eslint": "eslint 'src/**/*.ts'",
+    "check": "npm run check:eslint && npm run check:prettier"
   },
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "^1.2.0",
+    "@actions/core": "^1.2.6",
     "async-retry": "^1.2.3",
-    "azure-pipelines-task-lib": "^2.8.0",
+    "axios": "^0.20.0",
     "cli-table3": "^0.5.1",
-    "moment": "^2.24.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "typed-rest-client": "^1.2.0",
-    "xmlbuilder": "^13.0.0"
+    "moment": "^2.24.0"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
-    "@types/q": "^1.5.2",
-    "@types/request-promise-native": "^1.0.16"
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
+    "eslint": "^7.11.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^30.7.3",
+    "eslint-plugin-no-null": "^1.0.2",
+    "mocha": "^8.2.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
   }
 }

@@ -17,11 +17,11 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
       - name: Functional test deployment
         id: mabl-test-deployment
-        uses: mablhq/github-run-tests-action@v1.4
+        uses: mablhq/github-run-tests-action@v1
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,7 +53,7 @@ jobs:
   Use the
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
   to find the id.
-- `browser-types` {string} {optional}: comma seperated override for browser
+- `browser-types` {string} {optional}: comma separated override for browser
   types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
   provided, mabl will test the browsers configured on the triggered test.
 - 'uri' {string} {optional} the base uri to test against. If provided, this will
@@ -83,3 +83,13 @@ jobs:
   deployment.
 - `tests_failed` {int32} - number of mabl tests that failed against this
   deployment.
+
+
+## Contributing
+
+See [here](CONTRIBUTING.md) for details on contributing to this action.
+
+## License
+
+The Dockerfile and associated scripts and documentation in this project are
+released under the [MIT License](LICENSE).
