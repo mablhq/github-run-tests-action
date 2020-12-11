@@ -17,6 +17,7 @@
   "author": "mabl",
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "async-retry": "^1.2.3",
     "axios": "^0.20.0",
     "cli-table3": "^0.5.1",

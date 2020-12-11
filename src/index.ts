@@ -8,7 +8,8 @@ import {
 import {Application} from './entities/Application';
 import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyFormatExecution} from './table';
-import * as core from '@actions/core/lib/core';
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 import {Option} from './interfaces';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
@@ -86,7 +87,10 @@ async function run(): Promise<void> {
     }
 
     const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
-    const revision = process.env.GITHUB_SHA;
+    const revision =
+      process.env.GITHUB_EVENT_NAME === 'pull_request'
+        ? github.context.payload.pull_request?.head?.sha
+        : process.env.GITHUB_SHA;
 
     core.info(`Using git revision [${revision}]`);
     core.endGroup();
