@@ -1,5 +1,4 @@
-on: [pull-request]
-
+on: [pull_request]
 name: mabl
 
 jobs:
