@@ -87,7 +87,10 @@ async function run(): Promise<void> {
     }
 
     const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
-    const revision = process.env.GITHUB_EVENT_NAME === 'pull_request' ? github.context.payload.pull_request.head.sha : process.env.GITHUB_SHA;
+    const revision =
+      process.env.GITHUB_EVENT_NAME === 'pull_request'
+        ? github.context.payload.pull_request.head.sha
+        : process.env.GITHUB_SHA;
 
     core.info(`Using git revision [${revision}]`);
     core.endGroup();
