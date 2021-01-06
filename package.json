@@ -1,6 +1,6 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/index.js",
   "scripts": {
