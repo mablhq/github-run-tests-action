@@ -58,7 +58,7 @@ jobs:
 - `browser-types` {string} {optional}: comma separated override for browser
   types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
   provided, mabl will test the browsers configured on the triggered test.
-- 'uri' {string} {optional} the base uri to test against. If provided, this will
+- `uri` {string} {optional} the base uri to test against. If provided, this will
   override the default uri associated with the environment in mabl
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
