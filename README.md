@@ -2,8 +2,10 @@
 
 # mabl GitHub Run Tests Deployment Action
 
-This GitHub Action creates a mabl deployment event, triggering any functional
-tests associated with that deployment and waiting for their results.
+This GitHub Action creates a mabl deployment event, triggering cloud
+test runs associated with that deployment and waiting for their results.
+
+For more complex use cases, see the [setup-mabl-cli](https://github.com/marketplace/actions/setup-mabl-cli) Action to access the CLI directly.
 
 ### Example workflow:
 
