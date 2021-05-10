@@ -1,12 +1,11 @@
-import * as assert from 'assert';
-import {MablApiClient} from '../mablApiClient';
+import {MablApiClient} from '../src/mablApiClient';
 
-describe('GitHub Action tests', function () {
-  before(function () {});
+describe('GitHub Action tests', () => {
+  beforeEach(function () {});
 
-  after(() => {});
+  afterEach(() => {});
 
-  it('builds the request correctly with all options', (done: MochaDone) => {
+  it('builds the request correctly with all options', () => {
     const expected = {
       environment_id: 'env',
       application_id: 'app',
@@ -55,11 +54,10 @@ describe('GitHub Action tests', function () {
       },
       'abcs',
     );
-    assert.deepEqual(expected, requestBody);
-    done();
+    expect(expected).toStrictEqual(requestBody);
   });
 
-  it('builds the request correctly with some options', (done: MochaDone) => {
+  it('builds the request correctly with some options', () => {
     const expected = {
       application_id: 'app',
       plan_overrides: {uri: 'uri'},
@@ -104,7 +102,6 @@ describe('GitHub Action tests', function () {
       },
       'abcs',
     );
-    assert.deepEqual(expected, requestBody);
-    done();
+    expect(expected).toStrictEqual(requestBody);
   });
 });
