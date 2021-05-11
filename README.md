@@ -2,8 +2,10 @@
 
 # mabl GitHub Run Tests Deployment Action
 
-This GitHub Action creates a mabl deployment event, triggering any functional
-tests associated with that deployment and waiting for their results.
+This GitHub Action creates a mabl deployment event, triggering cloud
+test runs associated with that deployment and waiting for their results.
+
+For more complex use cases, see the [setup-mabl-cli](https://github.com/marketplace/actions/setup-mabl-cli) Action to access the CLI directly.
 
 ### Example workflow:
 
@@ -56,7 +58,7 @@ jobs:
 - `browser-types` {string} {optional}: comma separated override for browser
   types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
   provided, mabl will test the browsers configured on the triggered test.
-- 'uri' {string} {optional} the base uri to test against. If provided, this will
+- `uri` {string} {optional} the base uri to test against. If provided, this will
   override the default uri associated with the environment in mabl
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment

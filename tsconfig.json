@@ -7,7 +7,7 @@
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "module": "commonjs",
-    "outDir": "./lib",
+    "outDir": "lib/",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
