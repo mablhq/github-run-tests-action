@@ -19,7 +19,11 @@ inputs:
   browser-types:
     description: ^
       'override for the browser types to test.  If not provided, mabl will test
-      the browsers configured on the triggered test plans.'
+      the browsers configured on the triggered test plans (comma or new line delimited).'
+    required: false
+  plan-labels:
+    description: ^
+      'Include all plans with ANY of the supplied labels (comma or new line delimited).'
     required: false
   uri:
     description: ^

@@ -6,7 +6,7 @@ jobs:
     name: Mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
 
       - name: Install dependencies
         run: npm ci
@@ -29,3 +29,8 @@ jobs:
         with:
           application-id: l-j3VqIO6lLLOOEoFTPSxA-a
           environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
+          browser-types: |
+            chrome
+          plan-labels: |
+            canary
+            smoke-test

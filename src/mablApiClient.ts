@@ -85,7 +85,8 @@ export class MablApiClient {
   async postDeploymentEvent(
     applicationId: string,
     environmentId: string,
-    browserTypes: string,
+    browserTypes: string[],
+    planLabels: string[],
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
@@ -98,6 +99,7 @@ export class MablApiClient {
         applicationId,
         environmentId,
         browserTypes,
+        planLabels,
         uri,
         rebaselineImages,
         setStaticBaseline,
@@ -117,7 +119,8 @@ export class MablApiClient {
   buildRequestBody(
     applicationId: string,
     environmentId: string,
-    browserTypes: string,
+    browserTypes: string[],
+    planLabels: string[],
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
@@ -136,7 +139,10 @@ export class MablApiClient {
 
     const planOverrides: any = {};
     if (browserTypes) {
-      planOverrides.browser_types = browserTypes.split(',');
+      planOverrides.browser_types = browserTypes;
+    }
+    if (planLabels) {
+      planOverrides.plan_labels = planLabels;
     }
     if (uri) {
       planOverrides.uri = uri;

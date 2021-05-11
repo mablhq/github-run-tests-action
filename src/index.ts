@@ -38,10 +38,14 @@ async function run(): Promise<void> {
       core.setFailed('MABL_API_KEY required');
     }
 
-    // plan override options
-    const browserTypes: string = core.getInput('browser-types', {
+    const planLabels: string[] = core.getInput('plan-labels', {
       required: false,
-    });
+    })?.split(/[,\n]/) ?? [];
+
+    // plan override options
+    const browserTypes: string[] = core.getInput('browser-types', {
+      required: false,
+    })?.split(/[,\n]/) ?? [];
     const uri: string = core.getInput('uri', {required: false});
 
     // deployment action options
@@ -104,6 +108,7 @@ async function run(): Promise<void> {
       applicationId,
       environmentId,
       browserTypes,
+      planLabels,
       uri,
       rebaselineImages,
       setStaticBaseline,
