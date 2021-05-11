@@ -7,12 +7,12 @@ test runs associated with that deployment and waiting for their results.
 
 For more complex use cases, see the [setup-mabl-cli](https://github.com/marketplace/actions/setup-mabl-cli) Action to access the CLI directly.
 
-### Example workflow:
+### Example workflow: Simple
 
 ```
 on: [push]
 
-name: mabl
+name: mabl Simple Example
 
 jobs:
   test:
@@ -30,6 +30,47 @@ jobs:
         with:
           application-id: <your-application-id-a>
           environment-id: <your-environment-id-e>
+```
+
+### Example workflow: Complete
+
+Using all available flags.
+
+```
+on: [push]
+
+name: mabl Complex Example
+
+jobs:
+  test:
+    name: mabl Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Functional test deployment
+        id: mabl-test-deployment
+        uses: mablhq/github-run-tests-action@v1
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          application-id: <your-application-id-a>
+          environment-id: <your-environment-id-e>
+          uri: <your-override-url>
+          mabl-branch: <your-mabl-branch-name>
+          # Runs for both browsers
+          browser-types: |
+            chrome
+            firefox
+          # Runs plans matching ANY of the following labels AND the environment/application IDs above
+          plan-labels: |
+            canary
+            smoke-test
+          continue-on-failure: true
+          rebaseline-images: true
+          set-static-baseline: true
+          event-time: <your-event-time-epoch-milliseconds>
 ```
 
 ### Environment variables
@@ -55,20 +96,20 @@ jobs:
   Use the
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
   to find the id.
-- `browser-types` {string} {optional}: comma or new line separated override for browser
+- `browser-types` {string} (optional): comma or new line separated override for browser
   types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
   provided, mabl will test the browsers configured on the triggered test.
-- `plan-labels` {string} {optional}: comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
-- `uri` {string} {optional} the base uri to test against. If provided, this will
+- `plan-labels` {string} (optional): comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
+- `uri` {string} (optional) the base uri to test against. If provided, this will
   override the default uri associated with the environment in mabl
-- `mabl-branch` {string} {optional} run tests on the mabl branch of tests with this name. Defaults to `master`.
+- `mabl-branch` {string} (optional) run tests on the mabl branch of tests with this name. Defaults to `master`.
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
-- `set-static-baseline` {boolean} {optional} - Set `true` to use current
+- `set-static-baseline` {boolean} (optional) - Set `true` to use current
   deployment as an exact static baseline. If set, mabl will **not** model
   dynamic areas and will use the current deployment as the pixel-exact visual
   baseline.
-- `continue-on-failure` {boolean} {optional} - Set to true to continue the build
+- `continue-on-failure` {boolean} (optional) - Set to true to continue the build
   even if there are test failures
 - `event-time` {int64} (optional) - Event time the deployment occurred in UTC
   epoch milliseconds. Defaults to now.
