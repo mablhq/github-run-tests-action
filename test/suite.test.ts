@@ -1,9 +1,6 @@
 import {MablApiClient} from '../src/mablApiClient';
 
 describe('GitHub Action tests', () => {
-  beforeEach(function () {});
-
-  afterEach(() => {});
 
   it('builds the request correctly with all options', () => {
     const expected = {
@@ -29,7 +26,7 @@ describe('GitHub Action tests', () => {
         repository_pull_request_created_at: '2019',
       },
     };
-    const apiClient: MablApiClient = new MablApiClient('test');
+    const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
       'app',
       'env',
@@ -77,7 +74,7 @@ describe('GitHub Action tests', () => {
         repository_pull_request_created_at: '2019',
       },
     };
-    const apiClient: MablApiClient = new MablApiClient('test');
+    const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
       'app',
       '',
