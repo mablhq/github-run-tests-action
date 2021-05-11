@@ -23,44 +23,65 @@ const EXECUTION_COMPLETED_STATUSES = [
 ];
 const GITHUB_BASE_URL = 'https://api.github.com';
 
+function parseInputToArray(input: string): string[] {
+  // Note: GitHub Action inputs default to '' for undefined inputs, remove these
+  return input.split(/[,\n]/).filter((item) => item !== '');
+}
+
+function optionalInput(name: string): string | undefined {
+  const rawValue = core.getInput(name, {
+    required: false,
+  });
+
+  if (rawValue.length > 0) {
+    return rawValue;
+  }
+  return;
+}
+
 async function run(): Promise<void> {
   try {
     core.startGroup('Gathering inputs');
-    const applicationId: string = core.getInput('application-id', {
+    const applicationId = core.getInput('application-id', {
       required: false,
     });
-    const environmentId: string = core.getInput('environment-id', {
+    const environmentId = core.getInput('environment-id', {
       required: false,
     });
 
     const apiKey: string = process.env.MABL_API_KEY || '';
     if (!apiKey) {
-      core.setFailed('MABL_API_KEY required');
+      core.setFailed('env var MABL_API_KEY required');
     }
 
-    const planLabels: string[] = core.getInput('plan-labels', {
-      required: false,
-    })?.split(/[,\n]/) ?? [];
+    const planLabels = parseInputToArray(
+      core.getInput('plan-labels', {
+        required: false,
+      }),
+    );
 
     // plan override options
-    const browserTypes: string[] = core.getInput('browser-types', {
-      required: false,
-    })?.split(/[,\n]/) ?? [];
-    const uri: string = core.getInput('uri', {required: false});
+    const browserTypes = parseInputToArray(
+      core.getInput('browser-types', {
+        required: false,
+      }),
+    );
+    const uri = core.getInput('uri', {required: false});
+    const mablBranch = optionalInput('mabl-branch');
 
     // deployment action options
-    const rebaselineImages: boolean = parseBoolean(
+    const rebaselineImages = parseBoolean(
       core.getInput('rebaseline-images', {
         required: false,
       }),
     );
-    const setStaticBaseline: boolean = parseBoolean(
+    const setStaticBaseline = parseBoolean(
       core.getInput('set-static-baseline', {
         required: false,
       }),
     );
 
-    const continueOnPlanFailure: boolean = parseBoolean(
+    const continueOnPlanFailure = parseBoolean(
       core.getInput('continue-on-failure', {required: false}),
     );
 
@@ -96,6 +117,10 @@ async function run(): Promise<void> {
         ? github.context.payload.pull_request?.head?.sha
         : process.env.GITHUB_SHA;
 
+    if (mablBranch) {
+      core.info(`Using mabl branch [${mablBranch}]`);
+    }
+
     core.info(`Using git revision [${revision}]`);
     core.endGroup();
 
@@ -112,9 +137,10 @@ async function run(): Promise<void> {
       uri,
       rebaselineImages,
       setStaticBaseline,
-      revision,
       eventTime,
       properties,
+      revision,
+      mablBranch,
     );
 
     core.setOutput('mabl-deployment-id', deployment.id);

@@ -30,6 +30,10 @@ inputs:
       'the base uri to test against.  If provided, this will override the default uri
       associated with the environment in mabl'
     required: false
+  mabl-branch:
+    description: ^
+      'run tests on the mabl branch of tests with this name. Defaults to "master".'
+    required: false
   rebaseline-images:
     description: ^
       'Set to true to reset the visual baseline to the current deployment'

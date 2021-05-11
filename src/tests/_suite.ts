@@ -11,7 +11,7 @@ describe('GitHub Action tests', function () {
       environment_id: 'env',
       application_id: 'app',
       plan_overrides: {
-        browser_types: ['firefox', ' chrome', ' internet_explorer'],
+        browser_types: ['firefox', 'chrome', 'internet_explorer'],
         uri: 'uri',
       },
       actions: {rebaseline_images: true, set_static_baseline: true},
@@ -34,7 +34,8 @@ describe('GitHub Action tests', function () {
     const requestBody = apiClient.buildRequestBody(
       'app',
       'env',
-      'firefox, chrome, internet_explorer',
+      ['firefox', 'chrome', 'internet_explorer'],
+      [],
       'uri',
       true,
       true,
@@ -62,7 +63,11 @@ describe('GitHub Action tests', function () {
   it('builds the request correctly with some options', (done: MochaDone) => {
     const expected = {
       application_id: 'app',
-      plan_overrides: {uri: 'uri'},
+      plan_overrides: {
+        uri: 'uri',
+        browser_types: ['chrome', 'firefox'],
+        plan_labels: ['alpha', 'beta'],
+      },
       actions: {},
       revision: 'abcs',
       properties: {
@@ -83,7 +88,8 @@ describe('GitHub Action tests', function () {
     const requestBody = apiClient.buildRequestBody(
       'app',
       '',
-      '',
+      ['chrome', 'firefox'],
+      ['alpha', 'beta'],
       'uri',
       false,
       false,

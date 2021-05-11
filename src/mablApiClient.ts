@@ -90,9 +90,10 @@ export class MablApiClient {
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
-    revision: string | undefined,
     eventTime: number,
     properties: DeploymentProperties,
+    revision?: string,
+    mablBranch?: string,
   ): Promise<Deployment> {
     try {
       const requestBody: any = this.buildRequestBody(
@@ -106,6 +107,7 @@ export class MablApiClient {
         eventTime,
         properties,
         revision,
+        mablBranch,
       );
       return await this.makePostRequest<Deployment>(
         `${this.baseUrl}/events/deployment/`,
@@ -127,6 +129,7 @@ export class MablApiClient {
     event_time: number,
     properties: DeploymentProperties,
     revision?: string,
+    mablBranch?: string,
   ): any {
     const requestBody: any = {};
 
@@ -137,11 +140,15 @@ export class MablApiClient {
       requestBody.application_id = applicationId;
     }
 
+    if (mablBranch) {
+      requestBody.source_control_tag = mablBranch;
+    }
+
     const planOverrides: any = {};
-    if (browserTypes) {
+    if (browserTypes.length > 0) {
       planOverrides.browser_types = browserTypes;
     }
-    if (planLabels) {
+    if (planLabels.length > 0) {
       planOverrides.plan_labels = planLabels;
     }
     if (uri) {

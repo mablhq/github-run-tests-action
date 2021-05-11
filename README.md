@@ -61,6 +61,7 @@ jobs:
 - `plan-labels` {string} {optional}: comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
 - `uri` {string} {optional} the base uri to test against. If provided, this will
   override the default uri associated with the environment in mabl
+- `mabl-branch` {string} {optional} run tests on the mabl branch of tests with this name. Defaults to `master`.
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
 - `set-static-baseline` {boolean} {optional} - Set `true` to use current
