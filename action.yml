@@ -18,7 +18,7 @@ inputs:
     required: false
   browser-types:
     description: ^
-      'override for the browser types to test.  If not provided, mabl will test
+      'override for the browser types to test (comma separated).  If not provided, mabl will test
       the browsers configured on the triggered test plans.'
     required: false
   uri:
