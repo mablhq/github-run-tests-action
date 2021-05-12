@@ -6,25 +6,37 @@ branding:
 inputs:
   application-id:
     description: ^
-      'the mabl id for the deployed application.  You can get the id using the
+      'Mabl id for the deployed application.  You can get the id using the
       curl builder at https://app.mabl.com/workspaces/-/settings/apis. Either
       this or environment-id must be provided'
     required: false
   environment-id:
     description: ^
-      'the mabl id for the deployed environment. You can get the id using the
+      'Mabl id for the deployed environment. You can get the id using the
       curl builder at https://app.mabl.com/workspaces/-/settings/apis.  Either
       this or application-id must be provided'
     required: false
   browser-types:
     description: ^
-      'override for the browser types to test (comma separated).  If not provided, mabl will test
-      the browsers configured on the triggered test plans.'
+      'Override browser types to test.  If not provided, mabl will test
+      the browsers configured on the triggered test plans (comma or new line delimited).'
+    required: false
+  plan-labels:
+    description: ^
+      'Include all plans with ANY of the supplied labels (comma or new line delimited).'
     required: false
   uri:
     description: ^
-      'the base uri to test against.  If provided, this will override the default uri
+      'Base URI to test against.  If provided, this will override the default URI
       associated with the environment in mabl'
+    required: false
+  mabl-branch:
+    description: ^
+      'Run tests on the mabl branch of tests with this name. Defaults to "master".'
+    required: false
+  http-headers:
+    description: ^
+      'Headers to add to all requests e.g. "My-Header:the-value" (comma or new line delimited).'
     required: false
   rebaseline-images:
     description: ^
@@ -44,23 +56,23 @@ inputs:
     required: false
     default: false
   event-time:
-    description: "The event time the deployment happened at.  Defaults to now."
+    description: "Event time the deployment occurred.  Defaults to now."
     required: false
 outputs:
   mabl-deployment-id:
-    description: "mabl deployment event id"
+    description: "Mabl deployment event id"
   plans_run:
-    description: "total number of mabl plans run against this deployment.  A mabl plan is a collection of similarly configured tests."
+    description: "Total number of mabl plans run against this deployment.  A mabl plan is a collection of similarly configured tests."
   plans_passed:
-    description: "number of mabl plans that passed against this deployment.  A mabl plan is a collection of similarly configured tests."
+    description: "Number of mabl plans that passed against this deployment.  A mabl plan is a collection of similarly configured tests."
   plans_failed:
-    description: "number of mabl plans that failed against this deployment.  A mabl plan is a collection of similarly configured tests."
+    description: "Number of mabl plans that failed against this deployment.  A mabl plan is a collection of similarly configured tests."
   tests_run:
-    description: "total number of mabl tests run against this deployment."
+    description: "Total number of mabl tests run against this deployment."
   tests_passed:
-    description: "number of mabl tests that passed against this deployment."
+    description: "Number of mabl tests that passed against this deployment."
   tests_failed:
-    description: "number of mabl tests that failed against this deployment."
+    description: "Number of mabl tests that failed against this deployment."
 
 runs:
   using: "node12"
