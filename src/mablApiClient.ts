@@ -3,6 +3,8 @@ import {Application} from './entities/Application';
 import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
+import {Environment} from './entities/Environment';
+import {USER_AGENT} from './constants';
 
 export class MablApiClient {
   private readonly httpClient: AxiosInstance;
@@ -12,7 +14,7 @@ export class MablApiClient {
   constructor(apiKey: string) {
     const config: AxiosRequestConfig = {
       headers: {
-        'User-Agent': 'github-run-tests-action',
+        'User-Agent': USER_AGENT,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -58,14 +60,26 @@ export class MablApiClient {
     );
   }
 
-  async getApplication(applicationId: string): Promise<Application> {
+  async getApplication(id: string): Promise<Application> {
     try {
       return await this.makeGetRequest<Application>(
-        `${this.baseUrl}/v1/applications/${applicationId}`,
+        `${this.baseUrl}/v1/applications/${id}`,
       );
     } catch (error) {
       throw new Error(
-        `failed to get mabl application ($applicationId) from the API ${error}`,
+        `failed to get mabl application (${id}) from the API ${error}`,
+      );
+    }
+  }
+
+  async getEnvironment(id: string): Promise<Environment> {
+    try {
+      return await this.makeGetRequest<Environment>(
+        `${this.baseUrl}/v1/environments/${id}`,
+      );
+    } catch (error) {
+      throw new Error(
+        `failed to get mabl environment (${id}) from the API ${error}`,
       );
     }
   }
@@ -83,27 +97,33 @@ export class MablApiClient {
   }
 
   async postDeploymentEvent(
-    applicationId: string,
-    environmentId: string,
-    browserTypes: string,
-    uri: string,
+    browserTypes: string[],
+    planLabels: string[],
+    httpHeaders: string[],
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
-    revision: string | undefined,
     eventTime: number,
     properties: DeploymentProperties,
+    applicationId?: string,
+    environmentId?: string,
+    uri?: string,
+    revision?: string,
+    mablBranch?: string,
   ): Promise<Deployment> {
     try {
       const requestBody: any = this.buildRequestBody(
-        applicationId,
-        environmentId,
         browserTypes,
-        uri,
+        planLabels,
+        httpHeaders,
         rebaselineImages,
         setStaticBaseline,
         eventTime,
         properties,
+        applicationId,
+        environmentId,
+        uri,
         revision,
+        mablBranch,
       );
       return await this.makePostRequest<Deployment>(
         `${this.baseUrl}/events/deployment/`,
@@ -115,15 +135,18 @@ export class MablApiClient {
   }
 
   buildRequestBody(
-    applicationId: string,
-    environmentId: string,
-    browserTypes: string,
-    uri: string,
+    browserTypes: string[],
+    planLabels: string[],
+    httpHeaders: string[],
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
     event_time: number,
     properties: DeploymentProperties,
+    applicationId?: string,
+    environmentId?: string,
+    uri?: string,
     revision?: string,
+    mablBranch?: string,
   ): any {
     const requestBody: any = {};
 
@@ -134,14 +157,36 @@ export class MablApiClient {
       requestBody.application_id = applicationId;
     }
 
-    const planOverrides: any = {};
-    if (browserTypes) {
-      planOverrides.browser_types = browserTypes.split(',');
+    if (mablBranch) {
+      requestBody.source_control_tag = mablBranch;
     }
+
+    const planOverrides: any = {};
+    if (browserTypes.length) {
+      planOverrides.browser_types = browserTypes;
+    }
+
     if (uri) {
       planOverrides.uri = uri;
     }
+
+    if (httpHeaders.length) {
+      planOverrides.http_headers = httpHeaders.map((header) => {
+        const parts = header.split(':', 2); // allow for colon in the header value
+        return {
+          name: parts[0],
+          value: parts[1],
+          log_header_value: false,
+        };
+      });
+      planOverrides.http_headers_required = true;
+    }
+
     requestBody.plan_overrides = planOverrides;
+
+    if (planLabels.length) {
+      requestBody.plan_labels = planLabels;
+    }
 
     if (revision) {
       requestBody.revision = revision;

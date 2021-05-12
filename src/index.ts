@@ -11,9 +11,11 @@ import {prettyFormatExecution} from './table';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import {Option} from './interfaces';
+import {Environment} from './entities/Environment';
+import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
-const EXECUTION_POLL_INTERVAL_MILLIS = 10000;
+const EXECUTION_POLL_INTERVAL_MILLIS = 10_000;
 const EXECUTION_COMPLETED_STATUSES = [
   'succeeded',
   'failed',
@@ -23,45 +25,65 @@ const EXECUTION_COMPLETED_STATUSES = [
 ];
 const GITHUB_BASE_URL = 'https://api.github.com';
 
-async function run(): Promise<void> {
+export function optionalArrayInput(name: string): string[] {
+  // Note: GitHub Action inputs default to '' for undefined inputs, remove these
+  return core
+    .getInput(name, {
+      required: false,
+    })
+    .split(/[,\n]/)
+    .filter((item) => item.length)
+    .map((item) => item.trim());
+}
+
+export function optionalInput(name: string): string | undefined {
+  const rawValue = core.getInput(name, {
+    required: false,
+  });
+
+  if (rawValue.length > 0) {
+    return rawValue;
+  }
+  return;
+}
+
+export function booleanInput(name: string): boolean {
+  return (
+    core
+      .getInput(name, {
+        required: false,
+      })
+      .toLowerCase() === 'true'
+  );
+}
+
+export async function run(): Promise<void> {
   try {
     core.startGroup('Gathering inputs');
-    const applicationId: string = core.getInput('application-id', {
-      required: false,
-    });
-    const environmentId: string = core.getInput('environment-id', {
-      required: false,
-    });
+    const applicationId = optionalInput(ActionInputs.ApplicationId);
+    const environmentId = optionalInput(ActionInputs.EnvironmentId);
 
-    const apiKey: string = process.env.MABL_API_KEY || '';
+    const apiKey = process.env.MABL_API_KEY;
     if (!apiKey) {
-      core.setFailed('MABL_API_KEY required');
+      core.setFailed('env var MABL_API_KEY required');
+      return;
     }
 
+    const planLabels = optionalArrayInput(ActionInputs.PlanLabels);
+
     // plan override options
-    const browserTypes: string = core.getInput('browser-types', {
-      required: false,
-    });
-    const uri: string = core.getInput('uri', {required: false});
+    const browserTypes = optionalArrayInput(ActionInputs.BrowserTypes);
+    const httpHeaders = optionalArrayInput(ActionInputs.HttpHeaders);
+    const uri = optionalInput(ActionInputs.Uri);
+    const mablBranch = optionalInput(ActionInputs.MablBranch);
 
     // deployment action options
-    const rebaselineImages: boolean = parseBoolean(
-      core.getInput('rebaseline-images', {
-        required: false,
-      }),
-    );
-    const setStaticBaseline: boolean = parseBoolean(
-      core.getInput('set-static-baseline', {
-        required: false,
-      }),
-    );
-
-    const continueOnPlanFailure: boolean = parseBoolean(
-      core.getInput('continue-on-failure', {required: false}),
-    );
+    const rebaselineImages = booleanInput(ActionInputs.RebaselineImages);
+    const setStaticBaseline = booleanInput(ActionInputs.SetStaticBaseline);
+    const continueOnPlanFailure = booleanInput(ActionInputs.ContinueOnFailure);
 
     const pullRequest = await getRelatedPullRequest();
-    const eventTimeString = core.getInput('event-time', {required: false});
+    const eventTimeString = optionalInput(ActionInputs.EventTime);
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
     let properties: DeploymentProperties = {
@@ -92,6 +114,10 @@ async function run(): Promise<void> {
         ? github.context.payload.pull_request?.head?.sha
         : process.env.GITHUB_SHA;
 
+    if (mablBranch) {
+      core.info(`Using mabl branch [${mablBranch}]`);
+    }
+
     core.info(`Using git revision [${revision}]`);
     core.endGroup();
 
@@ -101,27 +127,39 @@ async function run(): Promise<void> {
 
     // send the deployment
     const deployment: Deployment = await apiClient.postDeploymentEvent(
-      applicationId,
-      environmentId,
       browserTypes,
-      uri,
+      planLabels,
+      httpHeaders,
       rebaselineImages,
       setStaticBaseline,
-      revision,
       eventTime,
       properties,
+      applicationId,
+      environmentId,
+      uri,
+      revision,
+      mablBranch,
     );
 
-    core.setOutput('mabl-deployment-id', deployment.id);
+    core.setOutput(ActionOutputs.DeploymentId, deployment.id);
 
-    let outputLink: string = baseApiUrl;
+    let appOrEnv: Application | Environment | undefined;
     if (applicationId) {
-      const application: Application = await apiClient.getApplication(
-        applicationId,
-      );
-      outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
-      core.info(`Deployment triggered. View output at: ${outputLink}`);
+      appOrEnv = await apiClient.getApplication(applicationId);
+    } else if (environmentId) {
+      appOrEnv = await apiClient.getEnvironment(environmentId);
     }
+
+    // Check we have minimum viable config
+    if (!appOrEnv) {
+      core.setFailed(
+        'Invalid configuration. Valid "application-id" or "environment-id" must be set. No tests started.',
+      );
+      return; // exit
+    }
+
+    const outputLink = `${baseApiUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
+    core.info(`Deployment triggered. View output at: ${outputLink}`);
 
     core.startGroup('Await completion of tests');
 
@@ -161,27 +199,27 @@ async function run(): Promise<void> {
     });
 
     core.setOutput(
-      'plans_run',
+      ActionOutputs.PlansRun,
       '' + finalExecutionResult.plan_execution_metrics.total,
     );
     core.setOutput(
-      'plans_passed',
+      ActionOutputs.PlansPassed,
       '' + finalExecutionResult.plan_execution_metrics.passed,
     );
     core.setOutput(
-      'plans_failed',
+      ActionOutputs.PlansFailed,
       '' + finalExecutionResult.plan_execution_metrics.failed,
     );
     core.setOutput(
-      'tests_run',
+      ActionOutputs.TestsRun,
       '' + finalExecutionResult.journey_execution_metrics.total,
     );
     core.setOutput(
-      'tests_passed',
+      ActionOutputs.TestsPassed,
       '' + finalExecutionResult.journey_execution_metrics.passed,
     );
     core.setOutput(
-      'tests_failed',
+      ActionOutputs.TestsFailed,
       '' + finalExecutionResult.journey_execution_metrics.failed,
     );
 
@@ -203,10 +241,6 @@ async function run(): Promise<void> {
       `mabl deployment task failed for the following reason: ${err}`,
     );
   }
-}
-
-function parseBoolean(toParse: string): boolean {
-  return toParse?.toLowerCase() === 'true';
 }
 
 function getExecutionsStillPending(
@@ -233,7 +267,7 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
       Authorization: `token ${githubToken}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
-      'User-Agent': 'mabl-action',
+      'User-Agent': USER_AGENT,
     },
   };
   const client = axios.create(config);
