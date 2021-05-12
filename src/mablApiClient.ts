@@ -73,7 +73,7 @@ export class MablApiClient {
 
   async getEnvironment(id: string): Promise<Environment> {
     try {
-      return await this.makeGetRequest<Application>(
+      return await this.makeGetRequest<Environment>(
         `${this.baseUrl}/v1/environments/${id}`,
       );
     } catch (error) {
