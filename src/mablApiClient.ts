@@ -96,31 +96,31 @@ export class MablApiClient {
   }
 
   async postDeploymentEvent(
-    applicationId: string,
-    environmentId: string,
     browserTypes: string[],
     planLabels: string[],
     httpHeaders: string[],
-    uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
     eventTime: number,
     properties: DeploymentProperties,
+    applicationId?: string,
+    environmentId?: string,
+    uri?: string,
     revision?: string,
     mablBranch?: string,
   ): Promise<Deployment> {
     try {
       const requestBody: any = this.buildRequestBody(
-        applicationId,
-        environmentId,
         browserTypes,
         planLabels,
         httpHeaders,
-        uri,
         rebaselineImages,
         setStaticBaseline,
         eventTime,
         properties,
+        applicationId,
+        environmentId,
+        uri,
         revision,
         mablBranch,
       );
@@ -134,16 +134,16 @@ export class MablApiClient {
   }
 
   buildRequestBody(
-    applicationId: string,
-    environmentId: string,
     browserTypes: string[],
     planLabels: string[],
     httpHeaders: string[],
-    uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
     event_time: number,
     properties: DeploymentProperties,
+    applicationId?: string,
+    environmentId?: string,
+    uri?: string,
     revision?: string,
     mablBranch?: string,
   ): any {
