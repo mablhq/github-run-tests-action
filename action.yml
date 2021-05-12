@@ -34,6 +34,10 @@ inputs:
     description: ^
       'run tests on the mabl branch of tests with this name. Defaults to "master".'
     required: false
+  http-headers:
+    description: ^
+      'Headers to add to all requests e.g. "My-Header:the-value" (comma or new line delimited).'
+    required: false
   rebaseline-images:
     description: ^
       'Set to true to reset the visual baseline to the current deployment'
@@ -72,4 +76,4 @@ outputs:
 
 runs:
   using: "node12"
-  main: "lib/index.js"
+  main: "lib/src/index.js"

@@ -3,6 +3,7 @@ import {Application} from './entities/Application';
 import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
+import {Environment} from './entities/Environment';
 
 export class MablApiClient {
   private readonly httpClient: AxiosInstance;
@@ -58,14 +59,26 @@ export class MablApiClient {
     );
   }
 
-  async getApplication(applicationId: string): Promise<Application> {
+  async getApplication(id: string): Promise<Application> {
     try {
       return await this.makeGetRequest<Application>(
-        `${this.baseUrl}/v1/applications/${applicationId}`,
+        `${this.baseUrl}/v1/applications/${id}`,
       );
     } catch (error) {
       throw new Error(
-        `failed to get mabl application ($applicationId) from the API ${error}`,
+        `failed to get mabl application (${id}) from the API ${error}`,
+      );
+    }
+  }
+
+  async getEnvironment(id: string): Promise<Environment> {
+    try {
+      return await this.makeGetRequest<Application>(
+        `${this.baseUrl}/v1/environments/${id}`,
+      );
+    } catch (error) {
+      throw new Error(
+        `failed to get mabl environment (${id}) from the API ${error}`,
       );
     }
   }
@@ -87,6 +100,7 @@ export class MablApiClient {
     environmentId: string,
     browserTypes: string[],
     planLabels: string[],
+    httpHeaders: string[],
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
@@ -101,6 +115,7 @@ export class MablApiClient {
         environmentId,
         browserTypes,
         planLabels,
+        httpHeaders,
         uri,
         rebaselineImages,
         setStaticBaseline,
@@ -123,6 +138,7 @@ export class MablApiClient {
     environmentId: string,
     browserTypes: string[],
     planLabels: string[],
+    httpHeaders: string[],
     uri: string,
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
@@ -145,16 +161,31 @@ export class MablApiClient {
     }
 
     const planOverrides: any = {};
-    if (browserTypes.length > 0) {
+    if (browserTypes.length) {
       planOverrides.browser_types = browserTypes;
     }
-    if (planLabels.length > 0) {
-      planOverrides.plan_labels = planLabels;
-    }
+
     if (uri) {
       planOverrides.uri = uri;
     }
+
+    if (httpHeaders.length) {
+      planOverrides.http_headers = httpHeaders.map((header) => {
+        const parts = header.split(':', 2); // allow for colon in the header value
+        return {
+          name: parts[0],
+          value: parts[1],
+          log_header_value: false,
+        };
+      });
+      planOverrides.http_headers_required = true;
+    }
+
     requestBody.plan_overrides = planOverrides;
+
+    if (planLabels.length) {
+      requestBody.plan_labels = planLabels;
+    }
 
     if (revision) {
       requestBody.revision = revision;

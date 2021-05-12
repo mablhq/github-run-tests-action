@@ -1,12 +1,8 @@
-import * as assert from 'assert';
-import {MablApiClient} from '../mablApiClient';
+import {MablApiClient} from '../src/mablApiClient';
 
-describe('GitHub Action tests', function () {
-  before(function () {});
+describe('GitHub Action tests', () => {
 
-  after(() => {});
-
-  it('builds the request correctly with all options', (done: MochaDone) => {
+  it('builds the request correctly with all options', () => {
     const expected = {
       environment_id: 'env',
       application_id: 'app',
@@ -30,11 +26,12 @@ describe('GitHub Action tests', function () {
         repository_pull_request_created_at: '2019',
       },
     };
-    const apiClient: MablApiClient = new MablApiClient('test');
+    const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
       'app',
       'env',
       ['firefox', 'chrome', 'internet_explorer'],
+      [],
       [],
       'uri',
       true,
@@ -56,17 +53,26 @@ describe('GitHub Action tests', function () {
       },
       'abcs',
     );
-    assert.deepEqual(expected, requestBody);
-    done();
+    expect(expected).toStrictEqual(requestBody);
   });
 
-  it('builds the request correctly with some options', (done: MochaDone) => {
+  it('builds the request correctly with some options', () => {
     const expected = {
       application_id: 'app',
+      plan_labels: ['alpha', 'beta'],
       plan_overrides: {
         uri: 'uri',
         browser_types: ['chrome', 'firefox'],
-        plan_labels: ['alpha', 'beta'],
+        http_headers: [{
+          name: 'Header-Uno',
+          value: 'value-uno',
+          log_header_value: false,
+        }, {
+          name: 'Header-Dos',
+          value: 'value-dos',
+          log_header_value: false,
+        }],
+        http_headers_required: true
       },
       actions: {},
       revision: 'abcs',
@@ -84,12 +90,13 @@ describe('GitHub Action tests', function () {
         repository_pull_request_created_at: '2019',
       },
     };
-    const apiClient: MablApiClient = new MablApiClient('test');
+    const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
       'app',
       '',
       ['chrome', 'firefox'],
       ['alpha', 'beta'],
+      ['Header-Uno:value-uno', 'Header-Dos:value-dos'],
       'uri',
       false,
       false,
@@ -110,7 +117,6 @@ describe('GitHub Action tests', function () {
       },
       'abcs',
     );
-    assert.deepEqual(expected, requestBody);
-    done();
+    expect(expected).toStrictEqual(requestBody);
   });
 });

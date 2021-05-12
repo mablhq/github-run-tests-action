@@ -14,11 +14,11 @@ jobs:
       - name: Run checks
         run: npm run check
 
-      - name: Compile Typescript
-        run: npm run build
-
       - name: Run Tests
         run: npm test
+
+      - name: Compile Typescript
+        run: npm run build
 
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
@@ -27,10 +27,13 @@ jobs:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          application-id: l-j3VqIO6lLLOOEoFTPSxA-a
-          environment-id: rtb4kWD5LuTr2KxaHvwfaA-e
+          application-id: D6uz-lhAGBYuTTc6Jj_w0Q-a
+          environment-id: I9tfo2dWd7WSigXcO91feA-e
           browser-types: |
             chrome
           plan-labels: |
             canary
             smoke-test
+          http-headers: |
+            X-Test-Header-1: 1234
+            X-Test-Header-2: 5678

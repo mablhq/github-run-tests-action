@@ -67,6 +67,9 @@ jobs:
           plan-labels: |
             canary
             smoke-test
+          http-headers: |
+            My-Header:the-value
+            My-Other-Header:the-second-value
           continue-on-failure: true
           rebaseline-images: true
           set-static-baseline: true
@@ -103,6 +106,7 @@ jobs:
 - `uri` {string} (optional) the base uri to test against. If provided, this will
   override the default uri associated with the environment in mabl
 - `mabl-branch` {string} (optional) run tests on the mabl branch of tests with this name. Defaults to `master`.
+- `http-headers` {string} (optional) Headers to add to all requests e.g. "My-Header:the-value" (comma or new line delimited).
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
   baseline to the current deployment
 - `set-static-baseline` {boolean} (optional) - Set `true` to use current

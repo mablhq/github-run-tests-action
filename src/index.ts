@@ -11,6 +11,7 @@ import {prettyFormatExecution} from './table';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import {Option} from './interfaces';
+import {Environment} from './entities/Environment';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS = 10000;
@@ -63,6 +64,11 @@ async function run(): Promise<void> {
     // plan override options
     const browserTypes = parseInputToArray(
       core.getInput('browser-types', {
+        required: false,
+      }),
+    );
+    const httpHeaders = parseInputToArray(
+      core.getInput('http-headers', {
         required: false,
       }),
     );
@@ -134,6 +140,7 @@ async function run(): Promise<void> {
       environmentId,
       browserTypes,
       planLabels,
+      httpHeaders,
       uri,
       rebaselineImages,
       setStaticBaseline,
@@ -145,14 +152,23 @@ async function run(): Promise<void> {
 
     core.setOutput('mabl-deployment-id', deployment.id);
 
-    let outputLink: string = baseApiUrl;
+    let appOrEnv: Application | Environment | undefined;
     if (applicationId) {
-      const application: Application = await apiClient.getApplication(
-        applicationId,
-      );
-      outputLink = `${baseApiUrl}/workspaces/${application.organization_id}/events/${deployment.id}`;
-      core.info(`Deployment triggered. View output at: ${outputLink}`);
+      appOrEnv = await apiClient.getApplication(applicationId);
+    } else if (environmentId) {
+      appOrEnv = await apiClient.getEnvironment(environmentId);
     }
+
+    // Check we have minimum viable config
+    if (!appOrEnv) {
+      core.setFailed(
+        'Invalid configuration. Valid "application-id" or "environment-id" must be set. No tests started.',
+      );
+      return; // exit
+    }
+
+    const outputLink = `${baseApiUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
+    core.info(`Deployment triggered. View output at: ${outputLink}`);
 
     core.startGroup('Await completion of tests');
 
