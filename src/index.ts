@@ -33,7 +33,7 @@ export function optionalArrayInput(name: string): string[] {
     })
     .split(/[,\n]/)
     .filter((item) => item.length)
-    .map(item => item.trim());
+    .map((item) => item.trim());
 }
 
 export function optionalInput(name: string): string | undefined {
