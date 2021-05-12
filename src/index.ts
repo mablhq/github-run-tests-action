@@ -12,7 +12,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import {Option} from './interfaces';
 import {Environment} from './entities/Environment';
-import {ActionInputs, ActionOutputs} from './constants';
+import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS = 10_000;
@@ -267,7 +267,7 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
       Authorization: `token ${githubToken}`,
       Accept: 'application/vnd.github.groot-preview+json',
       'Content-Type': 'application/json',
-      'User-Agent': 'mabl-action',
+      'User-Agent': USER_AGENT,
     },
   };
   const client = axios.create(config);

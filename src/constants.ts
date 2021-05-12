@@ -1,3 +1,5 @@
+export const USER_AGENT = 'mabl-github-run-tests-action';
+
 export enum ActionInputs {
   ApplicationId = 'application-id',
   BrowserTypes = 'browser-types',

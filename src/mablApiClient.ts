@@ -4,6 +4,7 @@ import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
 import {Environment} from './entities/Environment';
+import {USER_AGENT} from './constants';
 
 export class MablApiClient {
   private readonly httpClient: AxiosInstance;
@@ -13,7 +14,7 @@ export class MablApiClient {
   constructor(apiKey: string) {
     const config: AxiosRequestConfig = {
       headers: {
-        'User-Agent': 'github-run-tests-action',
+        'User-Agent': USER_AGENT,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
