@@ -1,6 +1,6 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/src/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "@types/node": "^12.0.10",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
-    "eslint": "^7.11.0",
+    "eslint": "^7.32.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.7.3",
     "eslint-plugin-no-null": "^1.0.2",
