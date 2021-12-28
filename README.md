@@ -85,7 +85,7 @@ jobs:
 - `MABL_API_KEY` {string} - Your mabl API key
   [available here](https://app.mabl.com/workspaces/-/settings/apis) This should
   be installed as a secret in your github repository. The key type should be "Command Line Interface"
-- `GITHUB_TOKEN` {string} (optional) - The Github token for your repository. If
+- `GITHUB_TOKEN` {string} (optional) - The Github token for your repository(Your uer icon > Settings > Developer Settings > Personal Access Token). If
   provided, the mabl action will associate a pull request with the deployment if
   the commit being built is associated with any pull requests. This token is
   automatically available as a secret in your repo but must be passed in
