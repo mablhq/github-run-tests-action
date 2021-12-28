@@ -10,23 +10,24 @@ For more complex use cases, see the [setup-mabl-cli](https://github.com/marketpl
 ### Example workflow: Simple
 
 ```
+name: mabl test workflow
 on: [push]
-
-name: mabl Simple Example
 
 jobs:
   test:
     name: mabl Test
     runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: https://sandbox.mabl.com/
     steps:
       - uses: actions/checkout@v2
-
-      - name: Functional test deployment
+      - name: Trigger mabl Deployment Event
         id: mabl-test-deployment
         uses: mablhq/github-run-tests-action@v1
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
         with:
           application-id: <your-application-id-a>
           environment-id: <your-environment-id-e>
@@ -45,6 +46,9 @@ jobs:
   test:
     name: mabl Test
     runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: https://sandbox.mabl.com/
     steps:
       - uses: actions/checkout@v2
 
@@ -53,7 +57,7 @@ jobs:
         uses: mablhq/github-run-tests-action@v1
         env:
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
         with:
           application-id: <your-application-id-a>
           environment-id: <your-environment-id-e>
@@ -80,7 +84,7 @@ jobs:
 
 - `MABL_API_KEY` {string} - Your mabl API key
   [available here](https://app.mabl.com/workspaces/-/settings/apis) This should
-  be installed as a secret in your github repository.
+  be installed as a secret in your github repository. The key type should be "Command Line Interface"
 - `GITHUB_TOKEN` {string} (optional) - The Github token for your repository. If
   provided, the mabl action will associate a pull request with the deployment if
   the commit being built is associated with any pull requests. This token is
