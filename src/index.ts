@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import {MablApiClient} from './mablApiClient';
 import {
   Deployment,
@@ -275,9 +275,12 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   try {
     const response = await client.get<PullRequest[]>(targetUrl, config);
     return response?.data?.[0];
-  } catch (error) {
-    if (error.status !== 404) {
-      core.warning(error.message);
+  } catch (error: any) {
+    if (error.isAxiosError) {
+      const axiosError = error as AxiosError;
+      if (axiosError.code !== '404') {
+        core.warning(axiosError.message);
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import {Execution, JourneyInfo} from './entities/ExecutionResult';
-import Table, {HorizontalTable} from 'cli-table3';
+import Table, {GenericTable, HorizontalTableRow} from 'cli-table3';
 import * as moment from 'moment';
 import {Option} from './interfaces';
 
@@ -14,7 +14,7 @@ export function prettyFormatExecution(execution: Execution): string {
     },
     colWidths: [15, 30, 15, 13, 15, 20, 17, 130],
     wordWrap: true,
-  }) as HorizontalTable;
+  }) as GenericTable<HorizontalTableRow>;
 
   planTable.push([
     'Plan Name:',
@@ -35,7 +35,7 @@ export function prettyFormatExecution(execution: Execution): string {
     },
     colWidths: [10, 15, 27, 15, 160],
     wordWrap: true,
-  }) as HorizontalTable;
+  }) as GenericTable<HorizontalTableRow>;
 
   execution.journey_executions.forEach((journeyExecution) => {
     const test: Option<JourneyInfo> = execution.journeys.find(
@@ -60,6 +60,6 @@ export function prettyFormatExecution(execution: Execution): string {
   return outputString;
 }
 
-function outputTable(table: HorizontalTable): string {
+function outputTable(table: GenericTable<HorizontalTableRow>): string {
   return table.toString().replace(/[\r\n]+/, '\n    ');
 }
