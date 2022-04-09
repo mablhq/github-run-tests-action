@@ -9,7 +9,7 @@ import {USER_AGENT} from './constants';
 export class MablApiClient {
   private readonly httpClient: AxiosInstance;
   private readonly baseUrl: string =
-    process.env.APP_URL ?? 'https://api.mabl.com';
+    process.env.MABL_REST_API_URL ?? 'https://api.mabl.com';
 
   constructor(apiKey: string) {
     const config: AxiosRequestConfig = {
