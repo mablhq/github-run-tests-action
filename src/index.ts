@@ -10,7 +10,7 @@ import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyFormatExecution} from './table';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import {Option} from './interfaces';
+import {Option, AxiosError} from './interfaces';
 import {Environment} from './entities/Environment';
 import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
 
@@ -170,13 +170,11 @@ export async function run(): Promise<void> {
         // eslint-disable-next-line no-restricted-globals
         setTimeout(resolve, EXECUTION_POLL_INTERVAL_MILLIS),
       );
-      const executionResult: ExecutionResult = await apiClient.getExecutionResults(
-        deployment.id,
-      );
+      const executionResult: ExecutionResult =
+        await apiClient.getExecutionResults(deployment.id);
       if (executionResult?.executions) {
-        const pendingExecutions: Execution[] = getExecutionsStillPending(
-          executionResult,
-        );
+        const pendingExecutions: Execution[] =
+          getExecutionsStillPending(executionResult);
         if (pendingExecutions.length === 0) {
           executionComplete = true;
         } else {
@@ -190,9 +188,8 @@ export async function run(): Promise<void> {
     core.endGroup();
 
     core.startGroup('Fetch execution results');
-    const finalExecutionResult: ExecutionResult = await apiClient.getExecutionResults(
-      deployment.id,
-    );
+    const finalExecutionResult: ExecutionResult =
+      await apiClient.getExecutionResults(deployment.id);
 
     finalExecutionResult.executions.forEach((execution: Execution) => {
       core.info(prettyFormatExecution(execution));
@@ -275,9 +272,10 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   try {
     const response = await client.get<PullRequest[]>(targetUrl, config);
     return response?.data?.[0];
-  } catch (error) {
-    if (error.status !== 404) {
-      core.warning(error.message);
+  } catch (error: unknown) {
+    const maybeAxiosError = error as AxiosError;
+    if (maybeAxiosError.status !== 404) {
+      core.warning(maybeAxiosError.message);
     }
   }
 

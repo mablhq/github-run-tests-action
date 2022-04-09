@@ -140,7 +140,7 @@ export class MablApiClient {
     httpHeaders: string[],
     rebaselineImages: boolean,
     setStaticBaseline: boolean,
-    event_time: number,
+    eventTime: number,
     properties: DeploymentProperties,
     applicationId?: string,
     environmentId?: string,
@@ -191,8 +191,8 @@ export class MablApiClient {
     if (revision) {
       requestBody.revision = revision;
     }
-    if (event_time) {
-      requestBody.event_time = event_time;
+    if (eventTime) {
+      requestBody.event_time = eventTime;
     }
     if (properties) {
       requestBody.properties = properties;
