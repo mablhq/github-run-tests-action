@@ -108,7 +108,7 @@ export async function run(): Promise<void> {
       }
     }
 
-    const baseApiUrl = process.env.APP_URL ?? DEFAULT_MABL_APP_URL;
+    const baseAppUrl = process.env.MABL_APP_URL ?? DEFAULT_MABL_APP_URL;
     const revision =
       process.env.GITHUB_EVENT_NAME === 'pull_request'
         ? github.context.payload.pull_request?.head?.sha
@@ -158,7 +158,7 @@ export async function run(): Promise<void> {
       return; // exit
     }
 
-    const outputLink = `${baseApiUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
+    const outputLink = `${baseAppUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
 
     core.startGroup('Await completion of tests');
@@ -166,15 +166,14 @@ export async function run(): Promise<void> {
     // poll Execution result until complete
     let executionComplete = false;
     while (!executionComplete) {
-      await new Promise((resolve) =>
-        // eslint-disable-next-line no-restricted-globals
-        setTimeout(resolve, EXECUTION_POLL_INTERVAL_MILLIS),
+      await sleep(EXECUTION_POLL_INTERVAL_MILLIS);
+
+      const executionResult = await apiClient.getExecutionResults(
+        deployment.id,
       );
-      const executionResult: ExecutionResult =
-        await apiClient.getExecutionResults(deployment.id);
       if (executionResult?.executions) {
-        const pendingExecutions: Execution[] =
-          getExecutionsStillPending(executionResult);
+        const pendingExecutions = getExecutionsStillPending(executionResult);
+
         if (pendingExecutions.length === 0) {
           executionComplete = true;
         } else {
@@ -188,10 +187,11 @@ export async function run(): Promise<void> {
     core.endGroup();
 
     core.startGroup('Fetch execution results');
-    const finalExecutionResult: ExecutionResult =
-      await apiClient.getExecutionResults(deployment.id);
+    const finalExecutionResult = await apiClient.getExecutionResults(
+      deployment.id,
+    );
 
-    finalExecutionResult.executions.forEach((execution: Execution) => {
+    finalExecutionResult.executions.forEach((execution) => {
       core.info(prettyFormatExecution(execution));
     });
 
@@ -238,6 +238,18 @@ export async function run(): Promise<void> {
       `mabl deployment task failed for the following reason: ${err}`,
     );
   }
+}
+
+function sleep(milliseconds: number): Promise<number> {
+  // eslint-disable-next-line no-restricted-globals
+  return new Promise((resolve, reject): void => {
+    try {
+      // eslint-disable-next-line no-restricted-globals
+      setTimeout(resolve, milliseconds);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 function getExecutionsStillPending(

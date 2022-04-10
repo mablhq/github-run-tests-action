@@ -6,6 +6,9 @@ import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
 import {Environment} from './entities/Environment';
 import {USER_AGENT} from './constants';
 
+const GET_REQUEST_TIMEOUT_MILLIS = 60_000;
+const POST_REQUEST_TIMEOUT_MILLIS = 900_000;
+
 export class MablApiClient {
   private readonly httpClient: AxiosInstance;
   private readonly baseUrl: string =
@@ -30,7 +33,9 @@ export class MablApiClient {
   async makeGetRequest<T>(url: string): Promise<T> {
     return retry(
       async () => {
-        const response = await this.httpClient.get<T>(url);
+        const response = await this.httpClient.get<T>(url, {
+          timeout: GET_REQUEST_TIMEOUT_MILLIS,
+        });
         if ((response.status ?? 400) >= 400) {
           throw new Error(`[${response.status} - ${response.statusText}]`);
         }
@@ -48,6 +53,7 @@ export class MablApiClient {
         const response = await this.httpClient.post(
           url,
           JSON.stringify(requestBody),
+          {timeout: POST_REQUEST_TIMEOUT_MILLIS},
         );
         if ((response.status ?? 400) >= 400) {
           throw new Error(`[${response.status} - ${response.statusText}]`);
