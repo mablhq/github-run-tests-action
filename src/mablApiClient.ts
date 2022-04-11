@@ -6,7 +6,7 @@ import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
 import {Environment} from './entities/Environment';
 import {USER_AGENT} from './constants';
 
-const GET_REQUEST_TIMEOUT_MILLIS = 60_000;
+const GET_REQUEST_TIMEOUT_MILLIS = 600_000;
 const POST_REQUEST_TIMEOUT_MILLIS = 900_000;
 
 export class MablApiClient {
