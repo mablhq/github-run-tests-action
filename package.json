@@ -1,6 +1,6 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/src/index.js",
   "scripts": {
@@ -16,26 +16,26 @@
   },
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "^1.2.7",
-    "@actions/github": "^4.0.0",
-    "async-retry": "^1.2.3",
-    "axios": "^0.21.1",
-    "cli-table3": "^0.5.1",
-    "moment": "^2.24.0"
+    "@actions/core": "1.6.0",
+    "@actions/github": "5.0.1",
+    "async-retry": "1.3.3",
+    "axios": "0.26.1",
+    "cli-table3": "0.6.1",
+    "moment": "2.29.2"
   },
   "devDependencies": {
-    "@types/async-retry": "^1.4.1",
-    "@types/jest": "^26.0.23",
-    "@types/node": "^12.0.10",
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/parser": "^2.34.0",
-    "eslint": "^7.11.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^30.7.3",
-    "eslint-plugin-no-null": "^1.0.2",
-    "jest": "^26.6.3",
-    "prettier": "^2.1.2",
-    "ts-jest": "^26.5.6",
-    "typescript": "^4.2.4"
+    "@types/async-retry": "1.4.3",
+    "@types/jest": "27.4.1",
+    "@types/node": "16.11.26",
+    "@typescript-eslint/eslint-plugin": "5.19.0",
+    "@typescript-eslint/parser": "5.19.0",
+    "eslint": "8.13.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsdoc": "39.1.0",
+    "eslint-plugin-no-null": "1.0.2",
+    "jest": "27.5.1",
+    "prettier": "2.6.2",
+    "ts-jest": "27.1.4",
+    "typescript": "4.6.3"
   }
 }

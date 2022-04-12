@@ -20,18 +20,62 @@
         "@typescript-eslint/await-thenable": "error",
 
         "camelcase": "off",
-        "@typescript-eslint/camelcase": ["error", { "properties": "never", "allow": ["^[A-Za-z][a-zA-Za-z]+_[A-Za-z]+$"] }],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "default",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "classProperty",
+                "modifiers": ["private"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "classProperty",
+                "modifiers": ["protected"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "objectLiteralProperty",
+                "format": null
+            },
+            {
+                "selector": "typeProperty",
+                "format": null
+            },
+            {
+                "selector": "variable",
+                "format": ["PascalCase", "camelCase", "UPPER_CASE"]
+            },
+            {
+                "selector": "parameter",
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "enumMember",
+                "format": ["snake_case", "camelCase", "PascalCase", "UPPER_CASE"]
+            },
+            {
+                "selector": "typeLike",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "interface",
+                "format": ["PascalCase"],
+                "custom": {
+                    "regex": "^I[A-Z]",
+                    "match": false
+                }
+            }
+        ],
 
-        "@typescript-eslint/class-name-casing": "error",
         "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
         "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "as"}],
         "@typescript-eslint/explicit-function-return-type": ["error"],
-        "@typescript-eslint/interface-name-prefix": "error",
-        "@typescript-eslint/no-extra-parens": ["error", "all", {
-            "returnAssign": false,
-            "nestedBinaryExpressions": false,
-            "enforceForArrowConditionals": false
-        }],
         "@typescript-eslint/no-extra-semi": "error",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-inferrable-types": "error",

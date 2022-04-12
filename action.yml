@@ -75,5 +75,5 @@ outputs:
     description: "Number of mabl tests that failed against this deployment."
 
 runs:
-  using: "node12"
+  using: "node16"
   main: "lib/src/index.js"
