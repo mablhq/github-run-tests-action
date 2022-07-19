@@ -25,6 +25,7 @@ jobs:
         id: mabl-test-deployment
         uses: mablhq/github-run-tests-action@v1
         env:
+          # Use a "CI/CD Integration" type of mabl API key
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -52,6 +53,7 @@ jobs:
         id: mabl-test-deployment
         uses: mablhq/github-run-tests-action@v1
         env:
+          # Use a "CI/CD Integration" type of mabl API key
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -78,8 +80,8 @@ jobs:
 
 ### Environment variables
 
-- `MABL_API_KEY` {string} - Your mabl API key
-  [available here](https://app.mabl.com/workspaces/-/settings/apis) This should
+- `MABL_API_KEY` {string} - Create a "CI/CD Integration" type mabl API key
+  [here](https://app.mabl.com/workspaces/-/settings/apis). This should
   be installed as a secret in your GitHub repository.
 - `GITHUB_TOKEN` {string} (optional) - The GitHub token for your repository. If
   provided, the mabl action will associate a pull request with the deployment if

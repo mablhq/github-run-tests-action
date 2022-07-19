@@ -1,5 +1,5 @@
 import {MablApiClient} from '../src/mablApiClient';
-import { booleanInput, optionalArrayInput, optionalInput, run } from "../src";
+import { booleanInput, optionalArrayInput, optionalInput, run } from '../src';
 import { ActionInputs } from '../src/constants';
 
 describe('GitHub Action tests', () => {
