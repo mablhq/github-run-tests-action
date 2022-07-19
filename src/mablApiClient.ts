@@ -42,7 +42,7 @@ export class MablApiClient {
         );
       case 403:
         throw new Error(
-          `Forbidden API error, are you sure you used a "CI/CD Integration" type API key? Ensure this key is for the same workspace you're testing?`,
+          `Forbidden API error, are you sure you used a "CI/CD Integration" type API key? Ensure this key is for the same workspace you're testing.`,
         );
       case 404:
         throw new Error(
