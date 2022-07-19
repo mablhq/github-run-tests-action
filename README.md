@@ -7,6 +7,8 @@ test runs associated with that deployment and waiting for their results.
 
 For more complex use cases, see the [setup-mabl-cli](https://github.com/marketplace/actions/setup-mabl-cli) Action to access the CLI directly.
 
+To view rich GitHub commit and pull requests information in the mabl app, [install the mabl GitHub App](https://help.mabl.com/docs/github-integration-setup) in _addition_ to using this action.
+
 ### Example workflow: Simple
 
 ```
@@ -19,7 +21,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Functional test deployment
         id: mabl-test-deployment
@@ -47,7 +49,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Functional test deployment
         id: mabl-test-deployment
