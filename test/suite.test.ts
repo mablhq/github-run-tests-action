@@ -74,7 +74,7 @@ describe('GitHub Action tests', () => {
       headers: {},
       data: 10,
       request: {}
-    })).toThrow("Forbidden API error, are you sure you used a \"CI/CD Integration\" type API key? Ensure this key is for the same workspace you're testing?");
+    })).toThrow("Forbidden API error, are you sure you used a \"CI/CD Integration\" type API key? Ensure this key is for the same workspace you're testing.");
   });
 
   it('humanizes 401 errors', () => {
