@@ -7,6 +7,8 @@ test runs associated with that deployment and waiting for their results.
 
 For more complex use cases, see the [setup-mabl-cli](https://github.com/marketplace/actions/setup-mabl-cli) Action to access the CLI directly.
 
+To view rich GitHub commit and pull requests information in the mabl app, [install the mabl GitHub App](https://help.mabl.com/docs/github-integration-setup) in _addition_ to using this action.
+
 ### Example workflow: Simple
 
 ```
@@ -19,12 +21,13 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Functional test deployment
         id: mabl-test-deployment
         uses: mablhq/github-run-tests-action@v1
         env:
+          # Use a "CI/CD Integration" type of mabl API key
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -46,12 +49,13 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Functional test deployment
         id: mabl-test-deployment
         uses: mablhq/github-run-tests-action@v1
         env:
+          # Use a "CI/CD Integration" type of mabl API key
           MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -78,8 +82,8 @@ jobs:
 
 ### Environment variables
 
-- `MABL_API_KEY` {string} - Your mabl API key
-  [available here](https://app.mabl.com/workspaces/-/settings/apis) This should
+- `MABL_API_KEY` {string} - Create a "CI/CD Integration" type mabl API key
+  [here](https://app.mabl.com/workspaces/-/settings/apis). This should
   be installed as a secret in your GitHub repository.
 - `GITHUB_TOKEN` {string} (optional) - The GitHub token for your repository. If
   provided, the mabl action will associate a pull request with the deployment if
