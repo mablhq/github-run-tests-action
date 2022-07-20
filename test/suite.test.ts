@@ -1,5 +1,5 @@
 import {MablApiClient} from '../src/mablApiClient';
-import { booleanInput, optionalArrayInput, optionalInput, run } from "../src";
+import { booleanInput, optionalArrayInput, optionalInput, run } from '../src';
 import { ActionInputs } from '../src/constants';
 
 describe('GitHub Action tests', () => {
@@ -64,6 +64,50 @@ describe('GitHub Action tests', () => {
 
     setGithubInput(ActionInputs.ApplicationId, 'BAZ');
     expect(optionalInput(ActionInputs.ApplicationId)).toEqual('BAZ');
+  });
+
+  it('humanizes 403 errors', () => {
+    expect(() => MablApiClient.throwHumanizedError({
+      status: 403,
+      statusText: 'This is an error',
+      config: {},
+      headers: {},
+      data: 10,
+      request: {}
+    })).toThrow("Forbidden API error, are you sure you used a \"CI/CD Integration\" type API key? Ensure this key is for the same workspace you're testing.");
+  });
+
+  it('humanizes 401 errors', () => {
+    expect(() => MablApiClient.throwHumanizedError({
+      status: 401,
+      statusText: 'This is an error',
+      config: {},
+      headers: {},
+      data: 10,
+      request: {}
+    })).toThrow('Unauthorized API error, are you sure you passed the correct API key? Is the key "enabled"?');
+  });
+
+  it('humanizes 404 errors', () => {
+    expect(() => MablApiClient.throwHumanizedError({
+      status: 404,
+      statusText: 'This is an error',
+      config: {},
+      headers: {},
+      data: 10,
+      request: {}
+    })).toThrow('Not Found API error, please ensure any environment or application IDs in your Action config are correct.');
+  });
+
+  it('humanizes non-specific errors', () => {
+    expect(() => MablApiClient.throwHumanizedError({
+      status: 500,
+      statusText: 'This is an error',
+      config: {},
+      headers: {},
+      data: 10,
+      request: {}
+    })).toThrow('[500 - This is an error]');
   });
 
   it('builds the request correctly with all options', () => {

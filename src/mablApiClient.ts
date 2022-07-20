@@ -2,7 +2,7 @@ import retry from 'async-retry';
 import {Application} from './entities/Application';
 import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
-import axios, {AxiosInstance, AxiosRequestConfig} from 'axios';
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {Environment} from './entities/Environment';
 import {USER_AGENT} from './constants';
 
@@ -30,6 +30,29 @@ export class MablApiClient {
     this.httpClient = axios.create(config);
   }
 
+  /**
+   * Throw helpful error messages, if possible, otherwise throw generic error
+   * @param response error response
+   */
+  static throwHumanizedError(response: AxiosResponse): never {
+    switch (response.status) {
+      case 401:
+        throw new Error(
+          `Unauthorized API error, are you sure you passed the correct API key? Is the key "enabled"?`,
+        );
+      case 403:
+        throw new Error(
+          `Forbidden API error, are you sure you used a "CI/CD Integration" type API key? Ensure this key is for the same workspace you're testing.`,
+        );
+      case 404:
+        throw new Error(
+          `Not Found API error, please ensure any environment or application IDs in your Action config are correct.`,
+        );
+      default:
+        throw new Error(`[${response.status} - ${response.statusText}]`);
+    }
+  }
+
   async makeGetRequest<T>(url: string): Promise<T> {
     return retry(
       async () => {
@@ -37,7 +60,7 @@ export class MablApiClient {
           timeout: GET_REQUEST_TIMEOUT_MILLIS,
         });
         if ((response.status ?? 400) >= 400) {
-          throw new Error(`[${response.status} - ${response.statusText}]`);
+          MablApiClient.throwHumanizedError(response);
         }
         return response.data;
       },
@@ -69,7 +92,7 @@ export class MablApiClient {
   async getApplication(id: string): Promise<Application> {
     try {
       return await this.makeGetRequest<Application>(
-        `${this.baseUrl}/v1/applications/${id}`,
+        `${this.baseUrl}/applications/${id}`,
       );
     } catch (error) {
       throw new Error(
@@ -81,7 +104,7 @@ export class MablApiClient {
   async getEnvironment(id: string): Promise<Environment> {
     try {
       return await this.makeGetRequest<Environment>(
-        `${this.baseUrl}/v1/environments/${id}`,
+        `${this.baseUrl}/environments/${id}`,
       );
     } catch (error) {
       throw new Error(
