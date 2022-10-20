@@ -16,10 +16,10 @@
   },
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "1.6.0",
-    "@actions/github": "5.0.1",
+    "@actions/core": "1.10.0",
+    "@actions/github": "5.1.1",
     "async-retry": "1.3.3",
-    "axios": "0.26.1",
+    "axios": "1.1.3",
     "cli-table3": "0.6.1",
     "moment": "2.29.4"
   },
@@ -36,6 +36,6 @@
     "jest": "27.5.1",
     "prettier": "2.6.2",
     "ts-jest": "27.1.4",
-    "typescript": "4.6.3"
+    "typescript": "4.8.4"
   }
 }

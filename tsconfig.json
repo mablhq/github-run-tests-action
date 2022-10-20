@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "removeComments": true,
     "strict": true,
-    "target": "es2016",
+    "target": "es2021",
     "esModuleInterop": true
   }
 }
