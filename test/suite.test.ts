@@ -1,6 +1,7 @@
 import {MablApiClient} from '../src/mablApiClient';
-import { booleanInput, optionalArrayInput, optionalInput, run } from '../src';
-import { ActionInputs } from '../src/constants';
+import {booleanInput, optionalArrayInput, optionalInput, run} from '../src';
+import {ActionInputs} from '../src/constants';
+import {AxiosHeaders} from 'axios';
 
 describe('GitHub Action tests', () => {
 
@@ -70,7 +71,7 @@ describe('GitHub Action tests', () => {
     expect(() => MablApiClient.throwHumanizedError({
       status: 403,
       statusText: 'This is an error',
-      config: {},
+      config: {headers: new AxiosHeaders()},
       headers: {},
       data: 10,
       request: {}
@@ -81,7 +82,7 @@ describe('GitHub Action tests', () => {
     expect(() => MablApiClient.throwHumanizedError({
       status: 401,
       statusText: 'This is an error',
-      config: {},
+      config: {headers: new AxiosHeaders()},
       headers: {},
       data: 10,
       request: {}
@@ -92,7 +93,7 @@ describe('GitHub Action tests', () => {
     expect(() => MablApiClient.throwHumanizedError({
       status: 404,
       statusText: 'This is an error',
-      config: {},
+      config: {headers: new AxiosHeaders()},
       headers: {},
       data: 10,
       request: {}
@@ -103,7 +104,9 @@ describe('GitHub Action tests', () => {
     expect(() => MablApiClient.throwHumanizedError({
       status: 500,
       statusText: 'This is an error',
-      config: {},
+      config: {
+        headers: new AxiosHeaders()
+      },
       headers: {},
       data: 10,
       request: {}
@@ -200,7 +203,6 @@ describe('GitHub Action tests', () => {
     };
     const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
-
       ['chrome', 'firefox'],
       ['alpha', 'beta'],
       ['Header-Uno:value-uno', 'Header-Dos:value-dos'],
