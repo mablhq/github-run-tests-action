@@ -57,13 +57,12 @@ export function booleanInput(name: string): boolean {
   );
 }
 
-export async function run(): Promise<void> {
+export async function run(enableFailureExitCodes = true): Promise<void> {
   const wrappedFailed = (message: string): void => {
     // Allow disabling, otherwise units will always fail in workflow builds w/ process exit code 1
-    if (process.env.DISABLE_FAILURE_EXIT_CODES !== 'true') {
-      // core.setFailed(message);
+    if (enableFailureExitCodes) {
+      core.setFailed(message);
     }
-    console.log(message);
   };
 
   try {
@@ -300,6 +299,3 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
 
   return;
 }
-
-// eslint-disable-next-line
-run();

@@ -16,13 +16,13 @@ describe('GitHub Action tests', () => {
   }
 
   function assertExitCodeNot(expected: number): void {
-    expect(process.exitCode).not.toEqual(expected);
+    expect(process.exitCode).not.toBe(expected);
   }
 
   it('handles invalid application/environment ids', async () => {
     setGithubInput(ActionInputs.ApplicationId, '');
     setGithubInput(ActionInputs.EnvironmentId, '');
-    await run();
+    await run(false);
     assertExitCodeNot(1); // We'd normally seek '1', but that will break the CI/CD test harness
   });
 
