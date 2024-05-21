@@ -57,7 +57,14 @@ export function booleanInput(name: string): boolean {
   );
 }
 
-export async function run(): Promise<void> {
+export async function run(enableFailureExitCodes = true): Promise<void> {
+  const wrappedFailed = (message: string): void => {
+    // Allow disabling, otherwise units will always fail in workflow builds w/ process exit code 1
+    if (enableFailureExitCodes) {
+      core.setFailed(message);
+    }
+  };
+
   try {
     core.startGroup('Gathering inputs');
     const applicationId = optionalInput(ActionInputs.ApplicationId);
@@ -65,7 +72,7 @@ export async function run(): Promise<void> {
 
     const apiKey = process.env.MABL_API_KEY;
     if (!apiKey) {
-      core.setFailed('env var MABL_API_KEY required');
+      wrappedFailed('env var MABL_API_KEY required');
       return;
     }
 
@@ -152,7 +159,7 @@ export async function run(): Promise<void> {
 
     // Check we have minimum viable config
     if (!appOrEnv) {
-      core.setFailed(
+      wrappedFailed(
         'Invalid configuration. Valid "application-id" or "environment-id" must be set. No tests started.',
       );
       return; // exit
@@ -226,15 +233,14 @@ export async function run(): Promise<void> {
       core.warning(
         `There were ${finalExecutionResult.journey_execution_metrics.failed} test failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
       );
-      // core.setNeutral();  Todo  Set neutral when support is added to actions v2
     } else {
-      core.setFailed(
+      wrappedFailed(
         `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
       );
     }
     core.endGroup();
   } catch (err) {
-    core.setFailed(
+    wrappedFailed(
       `mabl deployment task failed for the following reason: ${err}`,
     );
   }
@@ -293,6 +299,3 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
 
   return;
 }
-
-// eslint-disable-next-line
-run();

@@ -1,8 +1,8 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "mabl github action for GitHub pipelines integration",
-  "main": "lib/src/index.js",
+  "main": "lib/src/entrypoint.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",
@@ -16,17 +16,17 @@
   },
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "1.10.0",
-    "@actions/github": "5.1.1",
+    "@actions/core": "1.10.1",
+    "@actions/github": "6.0.0",
     "async-retry": "1.3.3",
-    "axios": "1.1.3",
-    "cli-table3": "0.6.1",
-    "moment": "2.29.4"
+    "axios": "1.7.1",
+    "cli-table3": "0.6.5",
+    "moment": "2.30.1"
   },
   "devDependencies": {
     "@types/async-retry": "1.4.3",
     "@types/jest": "29.2.0",
-    "@types/node": "16.11.26",
+    "@types/node": "20.12.12",
     "@typescript-eslint/eslint-plugin": "5.19.0",
     "@typescript-eslint/parser": "5.19.0",
     "eslint": "8.13.0",
