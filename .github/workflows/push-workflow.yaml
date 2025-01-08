@@ -34,6 +34,7 @@ jobs:
           application-id: D6uz-lhAGBYuTTc6Jj_w0Q-a
           environment-id: I9tfo2dWd7WSigXcO91feA-e
           uri: 'https://sandbox.mabl.com'
+          app-url: 'https://storage.googleapis.com/public-test-pages/uptime/canary.html'
           browser-types: |
             chrome
           plan-labels: |
