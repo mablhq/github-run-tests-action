@@ -27,8 +27,19 @@ inputs:
     required: false
   uri:
     description: ^
-      'Base URI to test against.  If provided, this will override the default URI
-      associated with the environment in mabl'
+      'DEPRECATED, see 'web_uri'. The base uri to test browser based tests against. If provided, this will
+      override the default uri associated with the environment in mabl'
+    deprecationMessage: "'uri' is deprecated, use 'web_uri' instead"
+    required: false
+  web_uri:
+    description: ^
+      'The base uri to run WEB BROWSER TESTS against. If provided, this will
+      override the default web browser uri associated with the environment in mabl (note, this replaces `uri`, and will override the value in `uri` if both are provided)'
+    required: false
+  api_uri:
+    description: ^
+      'The base uri to run API TESTS against. If provided, this will
+      override the default API uri associated with the environment in mabl'
     required: false
   mabl-branch:
     description: ^
@@ -42,19 +53,19 @@ inputs:
     description: ^
       'Set to true to reset the visual baseline to the current deployment'
     required: false
-    default: false
+    default: 'false'
   set-static-baseline:
     description: ^
       'Set to true to use the current deployment as an exact static
       baseline.  If this is set, mabl will not model dynamic areas and will use
       the current deployment as a pixel-exact visual baseline.'
     required: false
-    default: false
+    default: 'false'
   continue-on-failure:
     description: ^
       'Set to true to continue the build even if there are test failures'
     required: false
-    default: false
+    default: 'false'
   event-time:
     description: "Event time the deployment occurred.  Defaults to now."
     required: false

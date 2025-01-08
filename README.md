@@ -107,8 +107,12 @@ jobs:
   types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
   provided, mabl will test the browsers configured on the triggered test.
 - `plan-labels` {string} (optional): comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
-- `uri` {string} (optional) the base uri to test against. If provided, this will
+- `uri` {string} (optional, DEPRECATED - use web_uri) the base uri to run browser based tests against. If provided, this will
   override the default uri associated with the environment in mabl
+- `web_uri` {string} (optional) the base uri to run **Web Browser tests** against. If provided, this will
+  override the default web browser uri associated with the environment in mabl (note, this replaces `uri`, and will supersede the value in `uri` if both are provided)
+- `api_uri` {string} (optional) the base uri to run **API tests** against. If provided, this will
+  override the default API uri associated with the environment in mabl
 - `mabl-branch` {string} (optional) run tests on the mabl branch of tests with this name. Defaults to `master`.
 - `http-headers` {string} (optional) Headers to add to all requests e.g. "My-Header:the-value" (comma or new line delimited).
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual

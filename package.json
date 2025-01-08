@@ -1,6 +1,6 @@
 {
   "name": "mabl-github-deployments-action",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "mabl github action for GitHub pipelines integration",
   "main": "lib/src/entrypoint.js",
   "scripts": {
