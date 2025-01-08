@@ -33,6 +33,7 @@ jobs:
         with:
           application-id: D6uz-lhAGBYuTTc6Jj_w0Q-a
           environment-id: I9tfo2dWd7WSigXcO91feA-e
+          uri: 'https://sandbox.mabl.com'
           browser-types: |
             chrome
           plan-labels: |

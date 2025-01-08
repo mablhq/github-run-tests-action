@@ -27,16 +27,16 @@ inputs:
     required: false
   uri:
     description: ^
-      'DEPRECATED, see 'app_url'. The base uri to test browser based tests against. If provided, this will
+      'The base uri to test browser based tests against. If provided, this will
       override the default uri associated with the environment in mabl'
-    deprecationMessage: "'uri' is deprecated, use 'app_url' instead"
+    deprecationMessage: "'uri' is deprecated, use 'app-url' instead"
     required: false
-  app_url:
+  app-url:
     description: ^
       'The base uri to run WEB BROWSER TESTS against. If provided, this will
       override the default web browser uri associated with the environment in mabl (note, this replaces `uri`, and will override the value in `uri` if both are provided)'
     required: false
-  api_url:
+  api-url:
     description: ^
       'The base uri to run API TESTS against. If provided, this will
       override the default API uri associated with the environment in mabl'
