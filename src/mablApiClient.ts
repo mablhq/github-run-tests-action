@@ -201,7 +201,7 @@ export class MablApiClient {
     if (appUrl) {
       planOverrides.web_url = appUrl;
     }
-    if (appUrl) {
+    if (apiUrl) {
       planOverrides.api_url = apiUrl;
     }
 

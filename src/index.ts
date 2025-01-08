@@ -96,12 +96,16 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
 
     // Helpful warning notices
-    if(uri) {
-      core.warning(`Has been deprecated [${ActionInputs.Uri}]. Please use [${ActionInputs.UrlApp}] instead.`);
+    if (uri) {
+      core.warning(
+        `Has been deprecated [${ActionInputs.Uri}]. Please use [${ActionInputs.UrlApp}] instead.`,
+      );
     }
 
-    if(uri && appUrl) {
-      core.warning(`Both [${ActionInputs.Uri}] and [${ActionInputs.UrlApp}] were set. The value for [${ActionInputs.UrlApp}] will be used`);
+    if (uri && appUrl) {
+      core.warning(
+        `Both [${ActionInputs.Uri}] and [${ActionInputs.UrlApp}] were set. The value for [${ActionInputs.UrlApp}] will be used`,
+      );
     }
 
     const effectiveAppUrl = appUrl ?? uri;
