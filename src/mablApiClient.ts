@@ -135,7 +135,8 @@ export class MablApiClient {
     properties: DeploymentProperties,
     applicationId?: string,
     environmentId?: string,
-    uri?: string,
+    appUrl?: string,
+    apiUrl?: string,
     revision?: string,
     mablBranch?: string,
   ): Promise<Deployment> {
@@ -150,7 +151,8 @@ export class MablApiClient {
         properties,
         applicationId,
         environmentId,
-        uri,
+        appUrl,
+        apiUrl,
         revision,
         mablBranch,
       );
@@ -173,7 +175,8 @@ export class MablApiClient {
     properties: DeploymentProperties,
     applicationId?: string,
     environmentId?: string,
-    uri?: string,
+    appUrl?: string,
+    apiUrl?: string,
     revision?: string,
     mablBranch?: string,
   ): any {
@@ -195,8 +198,11 @@ export class MablApiClient {
       planOverrides.browser_types = browserTypes;
     }
 
-    if (uri) {
-      planOverrides.uri = uri;
+    if (appUrl) {
+      planOverrides.web_url = appUrl;
+    }
+    if (appUrl) {
+      planOverrides.api_url = apiUrl;
     }
 
     if (httpHeaders.length) {

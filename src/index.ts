@@ -82,6 +82,8 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const browserTypes = optionalArrayInput(ActionInputs.BrowserTypes);
     const httpHeaders = optionalArrayInput(ActionInputs.HttpHeaders);
     const uri = optionalInput(ActionInputs.Uri);
+    const apiUrl = optionalInput(ActionInputs.UrlApi);
+    const appUrl = optionalInput(ActionInputs.UrlApp);
     const mablBranch = optionalInput(ActionInputs.MablBranch);
 
     // deployment action options
@@ -92,6 +94,17 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const pullRequest = await getRelatedPullRequest();
     const eventTimeString = optionalInput(ActionInputs.EventTime);
     const eventTime = eventTimeString ? parseInt(eventTimeString) : Date.now();
+
+    // Helpful warning notices
+    if(uri) {
+      core.warning(`Has been deprecated [${ActionInputs.Uri}]. Please use [${ActionInputs.UrlApp}] instead.`);
+    }
+
+    if(uri && appUrl) {
+      core.warning(`Both [${ActionInputs.Uri}] and [${ActionInputs.UrlApp}] were set. The value for [${ActionInputs.UrlApp}] will be used`);
+    }
+
+    const effectiveAppUrl = appUrl ?? uri;
 
     let properties: DeploymentProperties = {
       triggering_event_name: process.env.GITHUB_EVENT_NAME,
@@ -143,7 +156,8 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
       properties,
       applicationId,
       environmentId,
-      uri,
+      effectiveAppUrl,
+      apiUrl,
       revision,
       mablBranch,
     );
