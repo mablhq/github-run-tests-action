@@ -183,7 +183,8 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
       return; // exit
     }
 
-    const effectiveWorkspaceId = appOrEnv.workspace_id ?? appOrEnv.organization_id;
+    const effectiveWorkspaceId =
+      appOrEnv.workspace_id ?? appOrEnv.organization_id;
 
     const outputLink = `${baseAppUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
