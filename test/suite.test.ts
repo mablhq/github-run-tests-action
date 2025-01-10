@@ -123,7 +123,7 @@ describe('GitHub Action tests', () => {
       environment_id: 'env',
       application_id: 'app',
       plan_overrides: {
-        browser_types: ['firefox', 'chrome', 'internet_explorer'],
+        browser_types: ['firefox', 'chrome', 'edge'],
         web_url: 'fake-app-url',
         api_url: 'fake-api-url',
       },
@@ -145,7 +145,7 @@ describe('GitHub Action tests', () => {
     };
     const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
-      ['firefox', 'chrome', 'internet_explorer'],
+      ['firefox', 'chrome', 'edge'],
       [],
       [],
       true,

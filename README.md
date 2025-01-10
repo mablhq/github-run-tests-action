@@ -104,7 +104,7 @@ jobs:
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
   to find the id.
 - `browser-types` {string} (optional): comma or new line separated override for browser
-  types to test e.g. `chrome, firefox, safari, internet_explorer`. If not
+  types to test e.g. `chrome, firefox, safari, edge`. If not
   provided, mabl will test the browsers configured on the triggered test.
 - `plan-labels` {string} (optional): comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
 - `uri` {string} (optional, DEPRECATED - use app_url) the base uri to run browser based tests against. If provided, this will
