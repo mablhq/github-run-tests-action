@@ -98,7 +98,7 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     // Helpful warning notices
     if (uri) {
       core.warning(
-        `Has been deprecated [${ActionInputs.Uri}]. Please use [${ActionInputs.UrlApp}] instead.`,
+        `[${ActionInputs.Uri}] has been deprecated. Please use [${ActionInputs.UrlApp}] instead.`,
       );
     }
 
