@@ -29,7 +29,7 @@ inputs:
     description: ^
       'The base uri to test browser based tests against. If provided, this will
       override the default uri associated with the environment in mabl'
-    deprecationMessage: "'uri' is deprecated, use 'app-url' instead"
+    deprecationMessage: "use 'app-url' instead"
     required: false
   app-url:
     description: ^
