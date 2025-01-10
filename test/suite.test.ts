@@ -36,8 +36,8 @@ describe('GitHub Action tests', () => {
     setGithubInput(ActionInputs.BrowserTypes, 'chrome, firefox ');
     expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox']);
 
-    setGithubInput(ActionInputs.BrowserTypes, 'chrome\nfirefox\nsafari ');
-    expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox', 'safari']);
+    setGithubInput(ActionInputs.BrowserTypes, 'chrome\nfirefox\nwebkit\nedge ');
+    expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox', 'webkit', 'edge']);
   });
 
   it('parses boolean inputs', () => {
