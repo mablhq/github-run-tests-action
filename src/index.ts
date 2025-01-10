@@ -183,6 +183,8 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
       return; // exit
     }
 
+    console.log('here it is [%j]', appOrEnv);
+
     const outputLink = `${baseAppUrl}/workspaces/${appOrEnv.organization_id}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
 
