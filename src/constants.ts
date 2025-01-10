@@ -12,6 +12,8 @@ export enum ActionInputs {
   RebaselineImages = 'rebaseline-images',
   SetStaticBaseline = 'set-static-baseline',
   Uri = 'uri',
+  UrlApi = 'api-url',
+  UrlApp = 'app-url',
 }
 
 export enum ActionOutputs {

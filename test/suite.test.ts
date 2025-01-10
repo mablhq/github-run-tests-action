@@ -36,8 +36,8 @@ describe('GitHub Action tests', () => {
     setGithubInput(ActionInputs.BrowserTypes, 'chrome, firefox ');
     expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox']);
 
-    setGithubInput(ActionInputs.BrowserTypes, 'chrome\nfirefox\nsafari ');
-    expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox', 'safari']);
+    setGithubInput(ActionInputs.BrowserTypes, 'chrome\nfirefox\nwebkit\nedge ');
+    expect(optionalArrayInput(ActionInputs.BrowserTypes)).toEqual(['chrome', 'firefox', 'webkit', 'edge']);
   });
 
   it('parses boolean inputs', () => {
@@ -123,8 +123,9 @@ describe('GitHub Action tests', () => {
       environment_id: 'env',
       application_id: 'app',
       plan_overrides: {
-        browser_types: ['firefox', 'chrome', 'internet_explorer'],
-        uri: 'uri',
+        browser_types: ['firefox', 'chrome', 'edge'],
+        web_url: 'fake-app-url',
+        api_url: 'fake-api-url',
       },
       actions: {rebaseline_images: true, set_static_baseline: true},
       revision: 'abcs',
@@ -144,7 +145,7 @@ describe('GitHub Action tests', () => {
     };
     const apiClient = new MablApiClient('test');
     const requestBody = apiClient.buildRequestBody(
-      ['firefox', 'chrome', 'internet_explorer'],
+      ['firefox', 'chrome', 'edge'],
       [],
       [],
       true,
@@ -166,7 +167,8 @@ describe('GitHub Action tests', () => {
       },
       'app',
       'env',
-      'uri',
+      'fake-app-url',
+      'fake-api-url',
       'abcs',
     );
     expect(expected).toStrictEqual(requestBody);
@@ -177,7 +179,7 @@ describe('GitHub Action tests', () => {
       application_id: 'app',
       plan_labels: ['alpha', 'beta'],
       plan_overrides: {
-        uri: 'uri',
+        web_url: 'fake-app-url',
         browser_types: ['chrome', 'firefox'],
         http_headers: [{
           name: 'Header-Uno',
@@ -230,7 +232,73 @@ describe('GitHub Action tests', () => {
       },
       'app',
       '',
-      'uri',
+      'fake-app-url',
+      undefined,
+      'abcs',
+    );
+    expect(expected).toStrictEqual(requestBody);
+  });
+
+  it('builds the request correctly with some options API test override', () => {
+    const expected = {
+      application_id: 'app',
+      plan_labels: ['alpha', 'beta'],
+      plan_overrides: {
+        api_url: 'fake-api-url',
+        browser_types: ['chrome', 'firefox'],
+        http_headers: [{
+          name: 'Header-Uno',
+          value: 'value-uno',
+          log_header_value: false,
+        }, {
+          name: 'Header-Dos',
+          value: 'value-dos',
+          log_header_value: false,
+        }],
+        http_headers_required: true
+      },
+      actions: {},
+      revision: 'abcs',
+      properties: {
+        repository_branch_name: 'master',
+        repository_commit_username: 'gcooney',
+        repository_action: 'mabl-tests',
+        repository_name: 'github-mabl-actions',
+        repository_url: 'git@github.com:mablhq/github-mabl-actions.git',
+        triggering_event_name: 'push',
+        repository_pull_request_url: 'https://github.com/mablhq/repo/pr/1',
+        repository_pull_request_number: 5,
+        repository_pull_request_title: 'good pr',
+        repository_pull_request_merged_at: '2019',
+        repository_pull_request_created_at: '2019',
+      },
+    };
+    const apiClient = new MablApiClient('test');
+    const requestBody = apiClient.buildRequestBody(
+      ['chrome', 'firefox'],
+      ['alpha', 'beta'],
+      ['Header-Uno:value-uno', 'Header-Dos:value-dos'],
+      false,
+      false,
+
+      0,
+      {
+        repository_branch_name: 'master',
+        repository_commit_username: 'gcooney',
+        repository_action: 'mabl-tests',
+        repository_name: 'github-mabl-actions',
+        repository_url: 'git@github.com:mablhq/github-mabl-actions.git',
+        triggering_event_name: 'push',
+        repository_pull_request_url: 'https://github.com/mablhq/repo/pr/1',
+        repository_pull_request_number: 5,
+        repository_pull_request_title: 'good pr',
+        repository_pull_request_merged_at: '2019',
+        repository_pull_request_created_at: '2019',
+      },
+      'app',
+      '',
+      undefined,
+      'fake-api-url',
       'abcs',
     );
     expect(expected).toStrictEqual(requestBody);
