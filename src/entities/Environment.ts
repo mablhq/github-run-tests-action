@@ -5,5 +5,6 @@ export interface Environment {
   last_updated_time: number;
   last_updated_by_id: string;
   organization_id: string;
+  workspace_id: string;
   name: string;
 }
