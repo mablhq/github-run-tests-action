@@ -1,6 +1,6 @@
-import {MablApiClient} from '../src/mablApiClient';
-import {booleanInput, optionalArrayInput, optionalInput, run} from '../src';
-import {ActionInputs} from '../src/constants';
+import {MablApiClient} from '../src/mablApiClient.js';
+import {booleanInput, optionalArrayInput, optionalInput, run} from '../src/index.js';
+import {ActionInputs} from '../src/constants.js';
 import {AxiosHeaders} from 'axios';
 
 

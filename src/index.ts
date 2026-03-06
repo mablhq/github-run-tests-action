@@ -1,18 +1,18 @@
 import axios, {AxiosRequestConfig} from 'axios';
-import {MablApiClient} from './mablApiClient';
+import {MablApiClient} from './mablApiClient.js';
 import {
   Deployment,
   DeploymentProperties,
   PullRequest,
-} from './entities/Deployment';
-import {Application} from './entities/Application';
-import {Execution, ExecutionResult} from './entities/ExecutionResult';
-import {prettyFormatExecution} from './table';
+} from './entities/Deployment.js';
+import {Application} from './entities/Application.js';
+import {Execution, ExecutionResult} from './entities/ExecutionResult.js';
+import {prettyFormatExecution} from './table.js';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import {Option, AxiosError} from './interfaces';
-import {Environment} from './entities/Environment';
-import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
+import {Option, AxiosError} from './interfaces.js';
+import {Environment} from './entities/Environment.js';
+import {ActionInputs, ActionOutputs, USER_AGENT} from './constants.js';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS = 10_000;
