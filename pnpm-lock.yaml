@@ -1,5 +1,7 @@
 lockfileVersion: '9.0'
 
+minimumReleaseAge: 5760
+
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
