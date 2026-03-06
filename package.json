@@ -5,7 +5,7 @@
   "type": "module",
   "main": "lib/src/entrypoint.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.cjs",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs",
     "build": "tsc",
     "release": "pnpm install --frozen-lockfile && pnpm run build && pnpm prune --prod && git add -f node_modules/* && git add -f lib/*",
     "fix:prettier": "prettier --write 'src/**/*.ts'",
@@ -39,5 +39,10 @@
     "prettier": "2.6.2",
     "ts-jest": "29.2.5",
     "typescript": "5.7.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/retry": "0.12.1"
+    }
   }
 }

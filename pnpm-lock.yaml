@@ -1,10 +1,11 @@
 lockfileVersion: '9.0'
 
-minimumReleaseAge: 5760
-
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+
+overrides:
+  '@types/retry': 0.12.1
 
 importers:
 
@@ -471,8 +472,8 @@ packages:
   '@types/node@24.1.0':
     resolution: {integrity: sha512-ut5FthK5moxFKH2T1CUOC6ctR67rQRvvHdFLCD2Ql6KXmMuCrjsSsRI9UsLCm9M18BMwClv4pn327UvB7eeO1w==, tarball: https://registry.npmjs.org/@types/node/-/node-24.1.0.tgz}
 
-  '@types/retry@0.12.5':
-    resolution: {integrity: sha512-3xSjTp3v03X/lSQLkczaN9UIEwJMoMCA1+Nb5HfbJEQWogdeQIyVtTvxPXDQjZ5zws8rFQfVfRdz03ARihPJgw==, tarball: https://registry.npmjs.org/@types/retry/-/retry-0.12.5.tgz}
+  '@types/retry@0.12.1':
+    resolution: {integrity: sha512-xoDlM2S4ortawSWORYqsdU+2rxdh4LRW9ytc3zmT37RIKQh6IHyKwwtKhKis9ah8ol07DCkZxPt8BBvPjC6v4g==, tarball: https://registry.npmjs.org/@types/retry/-/retry-0.12.1.tgz}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==, tarball: https://registry.npmjs.org/@types/stack-utils/-/stack-utils-2.0.3.tgz}
@@ -2200,6 +2201,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==, tarball: https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz}
     engines: {node: '>=10'}
 
+minimumReleaseAge: 5760
+
 snapshots:
 
   '@actions/core@3.0.0':
@@ -2724,7 +2727,7 @@ snapshots:
 
   '@types/async-retry@1.4.3':
     dependencies:
-      '@types/retry': 0.12.5
+      '@types/retry': 0.12.1
 
   '@types/babel__core@7.20.5':
     dependencies:
@@ -2774,7 +2777,7 @@ snapshots:
     dependencies:
       undici-types: 7.8.0
 
-  '@types/retry@0.12.5': {}
+  '@types/retry@0.12.1': {}
 
   '@types/stack-utils@2.0.3': {}
 
