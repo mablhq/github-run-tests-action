@@ -61,6 +61,17 @@ describe('GitHub Action tests', () => {
   });
 
 
+  it('parses await-completion boolean input', () => {
+    setGithubInput(ActionInputs.AwaitCompletion, 'true');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'True');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'false');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+  });
+
   it('parses optional string inputs', () => {
     setGithubInput(ActionInputs.ApplicationId, '');
     expect(optionalInput(ActionInputs.ApplicationId)).toBeUndefined();

@@ -4,6 +4,10 @@ branding:
   icon: play-circle
   color: white
 inputs:
+  await-completion:
+    description: 'Set to false to trigger tests without waiting for results. Only the mabl-deployment-id output will be set.'
+    required: false
+    default: 'true'
   application-id:
     description: ^
       'Mabl id for the deployed application.  You can get the id using the
@@ -86,5 +90,5 @@ outputs:
     description: "Number of mabl tests that failed against this deployment."
 
 runs:
-  using: "node20"
+  using: "node24"
   main: "lib/src/entrypoint.js"

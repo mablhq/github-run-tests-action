@@ -90,6 +90,7 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const rebaselineImages = booleanInput(ActionInputs.RebaselineImages);
     const setStaticBaseline = booleanInput(ActionInputs.SetStaticBaseline);
     const continueOnPlanFailure = booleanInput(ActionInputs.ContinueOnFailure);
+    const awaitCompletion = booleanInput(ActionInputs.AwaitCompletion);
 
     const pullRequest = await getRelatedPullRequest();
     const eventTimeString = optionalInput(ActionInputs.EventTime);
@@ -188,6 +189,14 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
 
     const outputLink = `${baseAppUrl}/workspaces/${effectiveWorkspaceId}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
+
+    if (!awaitCompletion) {
+      core.info(
+        'Test plan(s) triggered. Not awaiting completion because await-completion=false. See mabl app or APIs for final results.',
+      );
+      core.endGroup();
+      return;
+    }
 
     core.startGroup('Await completion of tests');
 

@@ -25,6 +25,31 @@ jobs:
       - name: Compile Typescript
         run: pnpm run build
 
+      - name: Run mabl tests (no-wait)
+        id: mabl-test-no-wait
+        uses: ./
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          application-id: D6uz-lhAGBYuTTc6Jj_w0Q-a
+          environment-id: I9tfo2dWd7WSigXcO91feA-e
+          app-url: 'https://storage.googleapis.com/public-test-pages/uptime/canary.html'
+          await-completion: false
+          plan-labels: |
+            canary
+
+      - name: Validate no-wait outputs
+        run: |
+          if [ -z "${{ steps.mabl-test-no-wait.outputs.mabl-deployment-id }}" ]; then
+            echo "::error::mabl-deployment-id should be set when await-completion=false"
+            exit 1
+          fi
+          if [ -n "${{ steps.mabl-test-no-wait.outputs.plans_run }}" ]; then
+            echo "::error::plans_run should NOT be set when await-completion=false"
+            exit 1
+          fi
+
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
         uses: ./
