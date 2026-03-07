@@ -47,14 +47,12 @@ export function optionalInput(name: string): string | undefined {
   return;
 }
 
-export function booleanInput(name: string): boolean {
-  return (
-    core
-      .getInput(name, {
-        required: false,
-      })
-      .toLowerCase() === 'true'
-  );
+export function booleanInput(name: string, defaultValue = false): boolean {
+  const raw = core.getInput(name, {required: false});
+  if (raw.length === 0) {
+    return defaultValue;
+  }
+  return raw.toLowerCase() === 'true';
 }
 
 export async function run(enableFailureExitCodes = true): Promise<void> {
@@ -90,7 +88,7 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const rebaselineImages = booleanInput(ActionInputs.RebaselineImages);
     const setStaticBaseline = booleanInput(ActionInputs.SetStaticBaseline);
     const continueOnPlanFailure = booleanInput(ActionInputs.ContinueOnFailure);
-    const awaitCompletion = booleanInput(ActionInputs.AwaitCompletion);
+    const awaitCompletion = booleanInput(ActionInputs.AwaitCompletion, true);
 
     const pullRequest = await getRelatedPullRequest();
     const eventTimeString = optionalInput(ActionInputs.EventTime);

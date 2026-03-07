@@ -78,7 +78,7 @@ describe('GitHub Action tests', () => {
     expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
 
     setGithubInput(ActionInputs.AwaitCompletion, '');
-    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+    expect(booleanInput(ActionInputs.AwaitCompletion, true)).toEqual(true);
   });
 
   it('parses optional string inputs', () => {
