@@ -68,7 +68,16 @@ describe('GitHub Action tests', () => {
     setGithubInput(ActionInputs.AwaitCompletion, 'True');
     expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
 
+    setGithubInput(ActionInputs.AwaitCompletion, 'TRUE');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
     setGithubInput(ActionInputs.AwaitCompletion, 'false');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'False');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+
+    setGithubInput(ActionInputs.AwaitCompletion, '');
     expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
   });
 
