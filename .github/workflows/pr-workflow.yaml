@@ -70,3 +70,18 @@ jobs:
           http-headers: |
             X-Test-Header-1: 1234
             X-Test-Header-2: 5678
+
+      - name: Validate wait outputs
+        run: |
+          if [ -z "${{ steps.mabl-test-deployment.outputs.mabl-deployment-id }}" ]; then
+            echo "::error::mabl-deployment-id should be set when await-completion=true"
+            exit 1
+          fi
+          if [ -z "${{ steps.mabl-test-deployment.outputs.plans_run }}" ]; then
+            echo "::error::plans_run should be set when await-completion=true"
+            exit 1
+          fi
+          if [ -z "${{ steps.mabl-test-deployment.outputs.tests_run }}" ]; then
+            echo "::error::tests_run should be set when await-completion=true"
+            exit 1
+          fi
