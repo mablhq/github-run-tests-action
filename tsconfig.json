@@ -1,12 +1,12 @@
 {
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "importsNotUsedAsValues": "remove",
     "module": "commonjs",
+    "rootDir": ".",
     "outDir": "lib/",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

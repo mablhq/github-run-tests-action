@@ -1,5 +1,7 @@
 name: "Run mabl tests"
-description: "Register a deployment event with mabl and run associated tests"
+description: >-
+  Register a deployment event with mabl and run associated tests. Set the
+  SLACK_WEBHOOK_URL env var to post Slack notifications when a deployment fails.
 branding:
   icon: play-circle
   color: white

@@ -4,6 +4,7 @@ import {Deployment, DeploymentProperties} from './entities/Deployment';
 import {ExecutionResult} from './entities/ExecutionResult';
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {Environment} from './entities/Environment';
+import {FailureAnalysisResponse} from './entities/FailureAnalysis';
 import {USER_AGENT} from './constants';
 
 const GET_REQUEST_TIMEOUT_MILLIS = 600_000;
@@ -122,6 +123,30 @@ export class MablApiClient {
       throw new Error(
         `failed to get mabl execution results for event ${eventId} from the API ${error}`,
       );
+    }
+  }
+
+  /**
+   * Load saved deployment failure analysis when available. Returns undefined on 404.
+   */
+  async tryGetSavedDeploymentFailureAnalysis(
+    workspaceId: string,
+    deploymentEventId: string,
+  ): Promise<FailureAnalysisResponse | undefined> {
+    try {
+      const response = await this.httpClient.get<FailureAnalysisResponse>(
+        `${this.baseUrl}/analysis/${workspaceId}/deployment/${deploymentEventId}/summary`,
+        {timeout: GET_REQUEST_TIMEOUT_MILLIS},
+      );
+      if ((response.status ?? 400) >= 400) {
+        return undefined;
+      }
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return undefined;
+      }
+      throw error;
     }
   }
 

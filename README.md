@@ -90,6 +90,11 @@ jobs:
   the commit being built is associated with any pull requests. This token is
   automatically available as a secret in your repo but must be passed in
   explicitly in order for the action to be able to access it.
+- `SLACK_WEBHOOK_URL` {string} (optional) - Slack incoming webhook URL. When set,
+  the action posts a message to Slack if any mabl tests or plans fail after the
+  deployment completes (including after unexpected task errors once a deployment
+  has been triggered). Includes deployment failure analysis when available
+  (polled for up to 10 attempts). Store as a repository secret.
 
 ### Inputs
 

@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, {AxiosRequestConfig, isAxiosError} from 'axios';
 import {MablApiClient} from './mablApiClient';
 import {
   Deployment,
@@ -10,9 +10,20 @@ import {Execution, ExecutionResult} from './entities/ExecutionResult';
 import {prettyFormatExecution} from './table';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import {Option, AxiosError} from './interfaces';
+import {Option} from './interfaces';
 import {Environment} from './entities/Environment';
 import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
+import {
+  deploymentHasFailures,
+  formatContinueOnFailureWarning,
+  formatDeploymentFailureMessage,
+} from './deploymentFailure';
+import {
+  buildSlackWorkflowContext,
+  notifySlackOnDeploymentFailure,
+  notifySlackOnDeploymentTaskFailure,
+  resolveSlackWebhookUrl,
+} from './slackNotification';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS = 10_000;
@@ -24,6 +35,14 @@ const EXECUTION_COMPLETED_STATUSES = [
   'terminated',
 ];
 const GITHUB_BASE_URL = 'https://api.github.com';
+
+interface ActiveDeploymentContext {
+  apiClient: MablApiClient;
+  workspaceId: string;
+  deploymentId: string;
+  deploymentPageUrl: string;
+  revision?: string;
+}
 
 export function optionalArrayInput(name: string): string[] {
   // Note: GitHub Action inputs default to '' for undefined inputs, remove these
@@ -57,13 +76,20 @@ export function booleanInput(name: string): boolean {
   );
 }
 
-export async function run(enableFailureExitCodes = true): Promise<void> {
+export async function run(
+  enableFailureExitCodes = true,
+  options?: {executionPollIntervalMs?: number},
+): Promise<void> {
+  const executionPollIntervalMs =
+    options?.executionPollIntervalMs ?? EXECUTION_POLL_INTERVAL_MILLIS;
   const wrappedFailed = (message: string): void => {
     // Allow disabling, otherwise units will always fail in workflow builds w/ process exit code 1
     if (enableFailureExitCodes) {
       core.setFailed(message);
     }
   };
+
+  let activeDeployment: ActiveDeploymentContext | undefined;
 
   try {
     core.startGroup('Gathering inputs');
@@ -189,12 +215,20 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const outputLink = `${baseAppUrl}/workspaces/${effectiveWorkspaceId}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
 
+    activeDeployment = {
+      apiClient,
+      workspaceId: effectiveWorkspaceId,
+      deploymentId: deployment.id,
+      deploymentPageUrl: outputLink,
+      revision,
+    };
+
     core.startGroup('Await completion of tests');
 
     // poll Execution result until complete
     let executionComplete = false;
     while (!executionComplete) {
-      await sleep(EXECUTION_POLL_INTERVAL_MILLIS);
+      await sleep(executionPollIntervalMs);
 
       const executionResult = await apiClient.getExecutionResults(
         deployment.id,
@@ -248,19 +282,28 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
       '' + finalExecutionResult.journey_execution_metrics.failed,
     );
 
-    if (finalExecutionResult.journey_execution_metrics.failed === 0) {
+    if (!deploymentHasFailures(finalExecutionResult)) {
       core.debug('Deployment plans passed');
-    } else if (continueOnPlanFailure) {
-      core.warning(
-        `There were ${finalExecutionResult.journey_execution_metrics.failed} test failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
-      );
     } else {
-      wrappedFailed(
-        `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
+      await notifySlackForActiveDeployment(
+        activeDeployment,
+        finalExecutionResult,
       );
+
+      const testsFailed = finalExecutionResult.journey_execution_metrics.failed;
+      const plansFailed = finalExecutionResult.plan_execution_metrics.failed;
+
+      if (continueOnPlanFailure) {
+        core.warning(formatContinueOnFailureWarning(testsFailed, plansFailed));
+      } else {
+        wrappedFailed(formatDeploymentFailureMessage(testsFailed, plansFailed));
+      }
     }
     core.endGroup();
   } catch (err) {
+    if (activeDeployment) {
+      await notifySlackAfterDeploymentTaskError(activeDeployment, err);
+    }
     wrappedFailed(
       `mabl deployment task failed for the following reason: ${err}`,
     );
@@ -290,6 +333,106 @@ function getExecutionsStillPending(
   });
 }
 
+async function notifySlackForActiveDeployment(
+  activeDeployment: ActiveDeploymentContext,
+  executionResult: ExecutionResult,
+): Promise<void> {
+  const webhookUrl = resolveSlackWebhookUrl();
+  if (!webhookUrl) {
+    core.info(
+      'Skipping Slack notification (set SLACK_WEBHOOK_URL env var to enable)',
+    );
+    return;
+  }
+
+  core.startGroup('Notify Slack on deployment failure');
+  try {
+    await sendSlackDeploymentFailureNotification(
+      webhookUrl,
+      activeDeployment,
+      executionResult,
+    );
+    core.info('Slack notification sent');
+  } catch (error) {
+    core.warning(`Failed to send Slack notification: ${error}`);
+  }
+  core.endGroup();
+}
+
+async function sendSlackDeploymentFailureNotification(
+  webhookUrl: string,
+  activeDeployment: ActiveDeploymentContext,
+  executionResult: ExecutionResult,
+): Promise<void> {
+  const workflowContext = buildSlackWorkflowContext();
+  await notifySlackOnDeploymentFailure(webhookUrl, {
+    apiClient: activeDeployment.apiClient,
+    workspaceId: activeDeployment.workspaceId,
+    deploymentEventId: activeDeployment.deploymentId,
+    deploymentPageUrl: activeDeployment.deploymentPageUrl,
+    executionResult,
+    repository: workflowContext.repository,
+    branch: workflowContext.branch,
+    actor: workflowContext.actor,
+    revision: activeDeployment.revision,
+    workflowUrl: workflowContext.workflowUrl,
+  });
+}
+
+async function notifySlackAfterDeploymentTaskError(
+  activeDeployment: ActiveDeploymentContext,
+  err: unknown,
+): Promise<void> {
+  const webhookUrl = resolveSlackWebhookUrl();
+  if (!webhookUrl) {
+    core.info(
+      'Skipping Slack notification (set SLACK_WEBHOOK_URL env var to enable)',
+    );
+    return;
+  }
+
+  core.startGroup('Notify Slack on deployment task failure');
+  try {
+    let executionResult: ExecutionResult | undefined;
+    try {
+      executionResult = await activeDeployment.apiClient.getExecutionResults(
+        activeDeployment.deploymentId,
+      );
+    } catch (resultsError) {
+      core.warning(
+        `Unable to load execution results for Slack notification: ${resultsError}`,
+      );
+    }
+
+    if (executionResult && deploymentHasFailures(executionResult)) {
+      await sendSlackDeploymentFailureNotification(
+        webhookUrl,
+        activeDeployment,
+        executionResult,
+      );
+      core.info('Slack notification sent');
+      return;
+    }
+
+    const workflowContext = buildSlackWorkflowContext();
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    await notifySlackOnDeploymentTaskFailure(webhookUrl, {
+      deploymentPageUrl: activeDeployment.deploymentPageUrl,
+      repository: workflowContext.repository,
+      branch: workflowContext.branch,
+      actor: workflowContext.actor,
+      revision: activeDeployment.revision,
+      workflowUrl: workflowContext.workflowUrl,
+      errorMessage,
+      executionResult,
+    });
+    core.info('Slack notification sent');
+  } catch (error) {
+    core.warning(`Failed to send Slack notification: ${error}`);
+  }
+  core.endGroup();
+}
+
 async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
   const targetUrl = `${GITHUB_BASE_URL}/repos/${process.env.GITHUB_REPOSITORY}/commits/${process.env.GITHUB_SHA}/pulls`;
 
@@ -312,9 +455,11 @@ async function getRelatedPullRequest(): Promise<Option<PullRequest>> {
     const response = await client.get<PullRequest[]>(targetUrl, config);
     return response?.data?.[0];
   } catch (error: unknown) {
-    const maybeAxiosError = error as AxiosError;
-    if (maybeAxiosError.status !== 404) {
-      core.warning(maybeAxiosError.message);
+    if (isAxiosError(error) && error.response?.status === 404) {
+      return;
+    }
+    if (error instanceof Error) {
+      core.warning(error.message);
     }
   }
 
