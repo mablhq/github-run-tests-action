@@ -86,5 +86,5 @@ outputs:
     description: "Number of mabl tests that failed against this deployment."
 
 runs:
-  using: "node20"
+  using: "node24"
   main: "lib/src/entrypoint.js"
