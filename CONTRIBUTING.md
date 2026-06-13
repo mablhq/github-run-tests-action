@@ -9,7 +9,7 @@ Releases can then be built from that branch by running
 
 ```bash
 # Compile release
-pnpm release
+pnpm run release
 
 # Commit the built release files
 git commit -m "<version, e.g. v1.4> release"

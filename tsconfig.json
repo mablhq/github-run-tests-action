@@ -5,8 +5,8 @@
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "importsNotUsedAsValues": "remove",
-    "module": "commonjs",
+    "module": "node16",
+    "moduleResolution": "node16",
     "outDir": "lib/",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "removeComments": true,
     "strict": true,
-    "target": "es2021",
+    "target": "es2022",
     "esModuleInterop": true
   }
 }

@@ -2,6 +2,7 @@ export const USER_AGENT = 'mabl-github-run-tests-action';
 
 export enum ActionInputs {
   ApplicationId = 'application-id',
+  AwaitCompletion = 'await-completion',
   BrowserTypes = 'browser-types',
   ContinueOnFailure = 'continue-on-failure',
   EnvironmentId = 'environment-id',

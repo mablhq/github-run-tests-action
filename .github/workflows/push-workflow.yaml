@@ -18,13 +18,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run checks
-        run: pnpm check
+        run: pnpm run check
 
       - name: Run Tests
         run: pnpm test
 
       - name: Compile Typescript
-        run: pnpm build
+        run: pnpm run build
 
       - name: Run mabl tests against deployment
         id: mabl-test-deployment

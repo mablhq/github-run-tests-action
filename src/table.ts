@@ -1,7 +1,7 @@
-import {Execution, JourneyInfo} from './entities/ExecutionResult';
+import {Execution, JourneyInfo} from './entities/ExecutionResult.js';
 import Table from 'cli-table3';
-import * as moment from 'moment';
-import {Option} from './interfaces';
+import moment from 'moment';
+import {Option} from './interfaces.js';
 
 export function prettyFormatExecution(execution: Execution): string {
   let outputString = '';
