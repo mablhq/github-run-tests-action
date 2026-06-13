@@ -6,22 +6,49 @@ jobs:
     name: Mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@9fd676a19091d4595eefd76e4bd31c97133911f1 # v4.2.0
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-          
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run checks
-        run: npm run check
+        run: pnpm run check
 
       - name: Run Tests
-        run: npm test
+        run: pnpm test
 
       - name: Compile Typescript
-        run: npm run build
+        run: pnpm run build
+
+      - name: Run mabl tests (no-wait)
+        id: mabl-test-no-wait
+        uses: ./
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          application-id: D6uz-lhAGBYuTTc6Jj_w0Q-a
+          environment-id: I9tfo2dWd7WSigXcO91feA-e
+          app-url: 'https://storage.googleapis.com/public-test-pages/uptime/canary.html'
+          await-completion: false
+          plan-labels: |
+            canary
+
+      - name: Validate no-wait outputs
+        run: |
+          if [ -z "${{ steps.mabl-test-no-wait.outputs.mabl-deployment-id }}" ]; then
+            echo "::error::mabl-deployment-id should be set when await-completion=false"
+            exit 1
+          fi
+          if [ -n "${{ steps.mabl-test-no-wait.outputs.plans_run }}" ]; then
+            echo "::error::plans_run should NOT be set when await-completion=false"
+            exit 1
+          fi
 
       - name: Run mabl tests against deployment
         id: mabl-test-deployment
@@ -43,3 +70,18 @@ jobs:
           http-headers: |
             X-Test-Header-1: 1234
             X-Test-Header-2: 5678
+
+      - name: Validate wait outputs
+        run: |
+          if [ -z "${{ steps.mabl-test-deployment.outputs.mabl-deployment-id }}" ]; then
+            echo "::error::mabl-deployment-id should be set when await-completion=true"
+            exit 1
+          fi
+          if [ -z "${{ steps.mabl-test-deployment.outputs.plans_run }}" ]; then
+            echo "::error::plans_run should be set when await-completion=true"
+            exit 1
+          fi
+          if [ -z "${{ steps.mabl-test-deployment.outputs.tests_run }}" ]; then
+            echo "::error::tests_run should be set when await-completion=true"
+            exit 1
+          fi

@@ -95,6 +95,9 @@ jobs:
 
 **Note**: Either `application-id` or `environment-id` must be supplied.
 
+- `await-completion` {boolean} (optional) - Set to `false` to trigger tests
+  without waiting for results. Only the `mabl-deployment-id` output will be set.
+  Defaults to `true`.
 - `application-id` {string} (optional) - mabl id for the deployed application.
   Use the
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
@@ -140,6 +143,10 @@ jobs:
   deployment.
 - `tests_failed` {int32} - number of mabl tests that failed against this
   deployment.
+
+**Note**: Metric outputs (`plans_run`, `plans_passed`, `plans_failed`,
+`tests_run`, `tests_passed`, `tests_failed`) are only available when
+`await-completion` is `true` (the default).
 
 
 ## Contributing

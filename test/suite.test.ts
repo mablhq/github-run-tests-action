@@ -1,6 +1,6 @@
-import {MablApiClient} from '../src/mablApiClient';
-import {booleanInput, optionalArrayInput, optionalInput, run} from '../src';
-import {ActionInputs} from '../src/constants';
+import {MablApiClient} from '../src/mablApiClient.js';
+import {booleanInput, optionalArrayInput, optionalInput, run} from '../src/index.js';
+import {ActionInputs} from '../src/constants.js';
 import {AxiosHeaders} from 'axios';
 
 
@@ -60,6 +60,26 @@ describe('GitHub Action tests', () => {
     expect(booleanInput(ActionInputs.RebaselineImages)).toEqual(true);
   });
 
+
+  it('parses await-completion boolean input', () => {
+    setGithubInput(ActionInputs.AwaitCompletion, 'true');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'True');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'TRUE');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(true);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'false');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+
+    setGithubInput(ActionInputs.AwaitCompletion, 'False');
+    expect(booleanInput(ActionInputs.AwaitCompletion)).toEqual(false);
+
+    setGithubInput(ActionInputs.AwaitCompletion, '');
+    expect(booleanInput(ActionInputs.AwaitCompletion, true)).toEqual(true);
+  });
 
   it('parses optional string inputs', () => {
     setGithubInput(ActionInputs.ApplicationId, '');

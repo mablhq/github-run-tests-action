@@ -2,31 +2,33 @@
   "name": "mabl-github-deployments-action",
   "version": "1.15.0",
   "description": "mabl github action for GitHub pipelines integration",
+  "type": "module",
   "main": "lib/src/entrypoint.js",
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.config.cjs",
     "build": "tsc",
-    "release": "npm ci && npm run build && npm prune --production && git add -f node_modules/* && git add -f lib/*",
+    "release": "pnpm install --frozen-lockfile && pnpm run build && pnpm prune --prod && git add -f node_modules/* && git add -f lib/*",
     "fix:prettier": "prettier --write 'src/**/*.ts'",
     "fix:eslint": "eslint 'src/**/*.ts' --fix",
-    "fix": "npm run fix:eslint && npm run fix:prettier",
+    "fix": "pnpm run fix:eslint && pnpm run fix:prettier",
     "check:prettier": "prettier --check 'src/**/*.ts'",
     "check:eslint": "eslint 'src/**/*.ts'",
-    "check": "npm run check:eslint && npm run check:prettier"
+    "check": "pnpm run check:eslint && pnpm run check:prettier"
   },
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
   "author": "mabl",
   "dependencies": {
-    "@actions/core": "1.11.1",
-    "@actions/github": "6.0.0",
+    "@actions/core": "3.0.0",
+    "@actions/github": "9.0.0",
     "async-retry": "1.3.3",
-    "axios": "1.7.9",
+    "axios": "1.13.6",
     "cli-table3": "0.6.5",
     "moment": "2.30.1"
   },
   "devDependencies": {
     "@types/async-retry": "1.4.3",
     "@types/jest": "29.2.0",
-    "@types/node": "20.12.12",
+    "@types/node": "24.1.0",
     "@typescript-eslint/eslint-plugin": "5.19.0",
     "@typescript-eslint/parser": "5.19.0",
     "eslint": "8.13.0",
@@ -37,5 +39,10 @@
     "prettier": "2.6.2",
     "ts-jest": "29.2.5",
     "typescript": "5.7.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/retry": "0.12.1"
+    }
   }
 }
