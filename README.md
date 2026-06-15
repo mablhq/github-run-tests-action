@@ -21,7 +21,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Functional test deployment
         id: mabl-test-deployment
@@ -49,7 +49,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Functional test deployment
         id: mabl-test-deployment
