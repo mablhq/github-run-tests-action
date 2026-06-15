@@ -1,10 +1,9 @@
 /// <reference types="node" />
 
-import type { Blob } from 'buffer'
-import type { MessagePort } from 'worker_threads'
+import type { Blob } from 'node:buffer'
+import type { ReadableStream, WritableStream } from 'node:stream/web'
+import type { MessagePort } from 'node:worker_threads'
 import {
-  EventTarget,
-  Event,
   EventInit,
   EventListenerOptions,
   AddEventListenerOptions,
@@ -17,14 +16,14 @@ export type BinaryType = 'blob' | 'arraybuffer'
 
 interface WebSocketEventMap {
   close: CloseEvent
-  error: Event
+  error: ErrorEvent
   message: MessageEvent
   open: Event
 }
 
 interface WebSocket extends EventTarget {
   binaryType: BinaryType
-  
+
   readonly bufferedAmount: number
   readonly extensions: string
 
@@ -97,16 +96,16 @@ interface MessageEventInit<T = any> extends EventInit {
   data?: T
   lastEventId?: string
   origin?: string
-  ports?: (typeof MessagePort)[]
-  source?: typeof MessagePort | null
+  ports?: MessagePort[]
+  source?: MessagePort | null
 }
 
 interface MessageEvent<T = any> extends Event {
   readonly data: T
   readonly lastEventId: string
   readonly origin: string
-  readonly ports: ReadonlyArray<typeof MessagePort>
-  readonly source: typeof MessagePort | null
+  readonly ports: readonly MessagePort[]
+  readonly source: MessagePort | null
   initMessageEvent(
     type: string,
     bubbles?: boolean,
@@ -114,8 +113,8 @@ interface MessageEvent<T = any> extends Event {
     data?: any,
     origin?: string,
     lastEventId?: string,
-    source?: typeof MessagePort | null,
-    ports?: (typeof MessagePort)[]
+    source?: MessagePort | null,
+    ports?: MessagePort[]
   ): void;
 }
 
@@ -124,8 +123,66 @@ export declare const MessageEvent: {
   new<T>(type: string, eventInitDict?: MessageEventInit<T>): MessageEvent<T>
 }
 
+interface ErrorEventInit extends EventInit {
+  message?: string
+  filename?: string
+  lineno?: number
+  colno?: number
+  error?: any
+}
+
+interface ErrorEvent extends Event {
+  readonly message: string
+  readonly filename: string
+  readonly lineno: number
+  readonly colno: number
+  readonly error: Error
+}
+
+export declare const ErrorEvent: {
+  prototype: ErrorEvent
+  new (type: string, eventInitDict?: ErrorEventInit): ErrorEvent
+}
+
 interface WebSocketInit {
   protocols?: string | string[],
   dispatcher?: Dispatcher,
   headers?: HeadersInit
 }
+
+interface WebSocketStreamOptions {
+  protocols?: string | string[]
+  signal?: AbortSignal
+}
+
+interface WebSocketCloseInfo {
+  closeCode: number
+  reason: string
+}
+
+interface WebSocketStream {
+  closed: Promise<WebSocketCloseInfo>
+  opened: Promise<{
+    extensions: string
+    protocol: string
+    readable: ReadableStream
+    writable: WritableStream
+  }>
+  url: string
+
+  close(options?: Partial<WebSocketCloseInfo>): void
+}
+
+export declare const WebSocketStream: {
+  prototype: WebSocketStream
+  new (url: string | URL, options?: WebSocketStreamOptions): WebSocketStream
+}
+
+interface WebSocketError extends Event, WebSocketCloseInfo {}
+
+export declare const WebSocketError: {
+  prototype: WebSocketError
+  new (type: string, init?: WebSocketCloseInfo): WebSocketError
+}
+
+export declare const ping: (ws: WebSocket, body?: Buffer) => void

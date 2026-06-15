@@ -1,18 +1,18 @@
 import axios, {AxiosRequestConfig} from 'axios';
-import {MablApiClient} from './mablApiClient';
+import {MablApiClient} from './mablApiClient.js';
 import {
   Deployment,
   DeploymentProperties,
   PullRequest,
-} from './entities/Deployment';
-import {Application} from './entities/Application';
-import {Execution, ExecutionResult} from './entities/ExecutionResult';
-import {prettyFormatExecution} from './table';
+} from './entities/Deployment.js';
+import {Application} from './entities/Application.js';
+import {Execution, ExecutionResult} from './entities/ExecutionResult.js';
+import {prettyFormatExecution} from './table.js';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import {Option, AxiosError} from './interfaces';
-import {Environment} from './entities/Environment';
-import {ActionInputs, ActionOutputs, USER_AGENT} from './constants';
+import {Option, AxiosError} from './interfaces.js';
+import {Environment} from './entities/Environment.js';
+import {ActionInputs, ActionOutputs, USER_AGENT} from './constants.js';
 
 const DEFAULT_MABL_APP_URL = 'https://app.mabl.com';
 const EXECUTION_POLL_INTERVAL_MILLIS = 10_000;
@@ -47,14 +47,12 @@ export function optionalInput(name: string): string | undefined {
   return;
 }
 
-export function booleanInput(name: string): boolean {
-  return (
-    core
-      .getInput(name, {
-        required: false,
-      })
-      .toLowerCase() === 'true'
-  );
+export function booleanInput(name: string, defaultValue = false): boolean {
+  const raw = core.getInput(name, {required: false});
+  if (raw.length === 0) {
+    return defaultValue;
+  }
+  return raw.toLowerCase() === 'true';
 }
 
 export async function run(enableFailureExitCodes = true): Promise<void> {
@@ -90,6 +88,7 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
     const rebaselineImages = booleanInput(ActionInputs.RebaselineImages);
     const setStaticBaseline = booleanInput(ActionInputs.SetStaticBaseline);
     const continueOnPlanFailure = booleanInput(ActionInputs.ContinueOnFailure);
+    const awaitCompletion = booleanInput(ActionInputs.AwaitCompletion, true);
 
     const pullRequest = await getRelatedPullRequest();
     const eventTimeString = optionalInput(ActionInputs.EventTime);
@@ -188,6 +187,14 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
 
     const outputLink = `${baseAppUrl}/workspaces/${effectiveWorkspaceId}/events/${deployment.id}`;
     core.info(`Deployment triggered. View output at: ${outputLink}`);
+
+    if (!awaitCompletion) {
+      core.info(
+        'Test plan(s) triggered. Not awaiting completion because await-completion=false. See mabl app or APIs for final results.',
+      );
+      core.endGroup();
+      return;
+    }
 
     core.startGroup('Await completion of tests');
 

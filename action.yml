@@ -4,6 +4,10 @@ branding:
   icon: play-circle
   color: white
 inputs:
+  await-completion:
+    description: 'Set to false to trigger tests without waiting for results. Only the mabl-deployment-id output will be set.'
+    required: false
+    default: 'true'
   application-id:
     description: ^
       'Mabl id for the deployed application.  You can get the id using the
@@ -33,13 +37,13 @@ inputs:
     required: false
   app-url:
     description: ^
-      'The base uri to run WEB BROWSER TESTS against. If provided, this will
-      override the default web browser uri associated with the environment in mabl (note, this replaces `uri`, and will override the value in `uri` if both are provided)'
+      'The base URL to run WEB BROWSER TESTS against. If provided, this will
+      override the default web browser URL associated with the environment in mabl (note, this replaces `uri`, and will override the value in `uri` if both are provided)'
     required: false
   api-url:
     description: ^
-      'The base uri to run API TESTS against. If provided, this will
-      override the default API uri associated with the environment in mabl'
+      'The base URL to run API TESTS against. If provided, this will
+      override the default API URL associated with the environment in mabl'
     required: false
   mabl-branch:
     description: ^
@@ -86,5 +90,5 @@ outputs:
     description: "Number of mabl tests that failed against this deployment."
 
 runs:
-  using: "node20"
+  using: "node24"
   main: "lib/src/entrypoint.js"

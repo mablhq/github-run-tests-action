@@ -4,16 +4,19 @@ const {
   Readable,
   Duplex,
   PassThrough
-} = require('stream')
+} = require('node:stream')
+const assert = require('node:assert')
+const { AsyncResource } = require('node:async_hooks')
 const {
   InvalidArgumentError,
   InvalidReturnValueError,
   RequestAbortedError
 } = require('../core/errors')
 const util = require('../core/util')
-const { AsyncResource } = require('async_hooks')
+const { kBodyUsed } = require('../core/symbols')
 const { addSignal, removeSignal } = require('./abort-signal')
-const assert = require('assert')
+
+function noop () {}
 
 const kResume = Symbol('resume')
 
@@ -22,6 +25,9 @@ class PipelineRequest extends Readable {
     super({ autoDestroy: true })
 
     this[kResume] = null
+    // Pipeline request bodies come from a live writable side and cannot be
+    // replayed across redirects or retries, even before any bytes are read.
+    this[kBodyUsed] = true
   }
 
   _read () {
@@ -92,7 +98,7 @@ class PipelineHandler extends AsyncResource {
     this.context = null
     this.onInfo = onInfo || null
 
-    this.req = new PipelineRequest().on('error', util.nop)
+    this.req = new PipelineRequest().on('error', noop)
 
     this.ret = new Duplex({
       readableObjectMode: opts.objectMode,
@@ -100,7 +106,7 @@ class PipelineHandler extends AsyncResource {
       read: () => {
         const { body } = this
 
-        if (body && body.resume) {
+        if (body?.resume) {
           body.resume()
         }
       },
@@ -144,45 +150,52 @@ class PipelineHandler extends AsyncResource {
     addSignal(this, signal)
   }
 
-  onConnect (abort, context) {
-    const { ret, res } = this
+  onRequestStart (controller, context) {
+    const { res } = this
+
+    if (this.reason) {
+      controller.abort(this.reason)
+      return
+    }
 
     assert(!res, 'pipeline cannot be retried')
 
-    if (ret.destroyed) {
-      throw new RequestAbortedError()
-    }
-
-    this.abort = abort
+    this.abort = (reason) => controller.abort(reason)
     this.context = context
   }
 
-  onHeaders (statusCode, rawHeaders, resume) {
+  onResponseStart (controller, statusCode, headers, _statusMessage) {
     const { opaque, handler, context } = this
 
     if (statusCode < 200) {
       if (this.onInfo) {
-        const headers = this.responseHeaders === 'raw' ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders)
-        this.onInfo({ statusCode, headers })
+        const rawHeaders = controller?.rawHeaders
+        const responseHeaders = this.responseHeaders === 'raw'
+          ? util.parseRawHeaders(rawHeaders)
+          : headers
+        this.onInfo({ statusCode, headers: responseHeaders })
       }
       return
     }
 
-    this.res = new PipelineResponse(resume)
+    this.res = new PipelineResponse(() => controller.resume())
 
     let body
     try {
       this.handler = null
-      const headers = this.responseHeaders === 'raw' ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders)
+      const rawHeaders = controller?.rawHeaders
+      const responseHeaders = this.responseHeaders === 'raw'
+        ? util.parseRawHeaders(rawHeaders)
+        : headers
       body = this.runInAsyncScope(handler, null, {
         statusCode,
-        headers,
+        headers: responseHeaders,
         opaque,
         body: this.res,
         context
       })
     } catch (err) {
-      this.res.on('error', util.nop)
+      this.res.on('error', noop)
       throw err
     }
 
@@ -219,17 +232,20 @@ class PipelineHandler extends AsyncResource {
     this.body = body
   }
 
-  onData (chunk) {
+  onResponseData (controller, chunk) {
     const { res } = this
-    return res.push(chunk)
+
+    if (res.push(chunk) === false) {
+      controller.pause()
+    }
   }
 
-  onComplete (trailers) {
+  onResponseEnd (_controller, _trailers) {
     const { res } = this
     res.push(null)
   }
 
-  onError (err) {
+  onResponseError (_controller, err) {
     const { ret } = this
     this.handler = null
     util.destroy(ret, err)

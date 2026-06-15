@@ -1,10 +1,11 @@
 'use strict'
 
-const { InvalidArgumentError, RequestAbortedError, SocketError } = require('../core/errors')
-const { AsyncResource } = require('async_hooks')
+const { InvalidArgumentError, SocketError } = require('../core/errors')
+const { AsyncResource } = require('node:async_hooks')
+const assert = require('node:assert')
 const util = require('../core/util')
+const { kHTTP2Stream } = require('../core/symbols')
 const { addSignal, removeSignal } = require('./abort-signal')
-const assert = require('assert')
 
 class UpgradeHandler extends AsyncResource {
   constructor (opts, callback) {
@@ -33,37 +34,51 @@ class UpgradeHandler extends AsyncResource {
     addSignal(this, signal)
   }
 
-  onConnect (abort, context) {
-    if (!this.callback) {
-      throw new RequestAbortedError()
+  onRequestStart (controller, context) {
+    if (this.reason) {
+      controller.abort(this.reason)
+      return
     }
 
-    this.abort = abort
-    this.context = null
+    assert(this.callback)
+
+    this.abort = (reason) => controller.abort(reason)
+    this.context = context
   }
 
-  onHeaders () {
+  onResponseStart () {
     throw new SocketError('bad upgrade', null)
   }
 
-  onUpgrade (statusCode, rawHeaders, socket) {
-    const { callback, opaque, context } = this
+  onRequestUpgrade (controller, statusCode, headers, socket) {
+    const expectedStatusCode = socket[kHTTP2Stream] === true ? 200 : 101
 
-    assert.strictEqual(statusCode, 101)
+    if (statusCode !== expectedStatusCode) {
+      const socketInfo = socket[kHTTP2Stream] === true ? null : util.getSocketInfo(socket)
+      controller.abort(new SocketError('bad upgrade', socketInfo))
+      return
+    }
+
+    const { callback, opaque, context } = this
 
     removeSignal(this)
 
     this.callback = null
-    const headers = this.responseHeaders === 'raw' ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders)
+
+    const rawHeaders = controller?.rawHeaders
+    const responseHeaders = this.responseHeaders === 'raw'
+      ? util.parseRawHeaders(rawHeaders)
+      : headers
+
     this.runInAsyncScope(callback, null, null, {
-      headers,
+      headers: responseHeaders,
       socket,
       opaque,
       context
     })
   }
 
-  onError (err) {
+  onResponseError (_controller, err) {
     const { callback, opaque } = this
 
     removeSignal(this)
@@ -88,16 +103,17 @@ function upgrade (opts, callback) {
 
   try {
     const upgradeHandler = new UpgradeHandler(opts, callback)
-    this.dispatch({
+    const upgradeOpts = {
       ...opts,
       method: opts.method || 'GET',
       upgrade: opts.protocol || 'Websocket'
-    }, upgradeHandler)
+    }
+    this.dispatch(upgradeOpts, upgradeHandler)
   } catch (err) {
     if (typeof callback !== 'function') {
       throw err
     }
-    const opaque = opts && opts.opaque
+    const opaque = opts?.opaque
     queueMicrotask(() => callback(err, { opaque }))
   }
 }

@@ -21,7 +21,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Functional test deployment
         id: mabl-test-deployment
@@ -49,7 +49,7 @@ jobs:
     name: mabl Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Functional test deployment
         id: mabl-test-deployment
@@ -61,7 +61,7 @@ jobs:
         with:
           application-id: <your-application-id-a>
           environment-id: <your-environment-id-e>
-          uri: <your-override-url>
+          app-url: <your-webapp-override-url>
           mabl-branch: <your-mabl-branch-name>
           # Runs for both browsers
           browser-types: |
@@ -95,6 +95,9 @@ jobs:
 
 **Note**: Either `application-id` or `environment-id` must be supplied.
 
+- `await-completion` {boolean} (optional) - Set to `false` to trigger tests
+  without waiting for results. Only the `mabl-deployment-id` output will be set.
+  Defaults to `true`.
 - `application-id` {string} (optional) - mabl id for the deployed application.
   Use the
   [curl builder](https://app.mabl.com/workspaces/-/settings/apis#api-docs-selector-dropdown-button)
@@ -107,12 +110,12 @@ jobs:
   types to test e.g. `chrome, firefox, webkit, edge`. If not
   provided, mabl will test the browsers configured on the triggered test.
 - `plan-labels` {string} (optional): comma or new line separated plan labels to test. Plans matching **any** label will be run. e.g. `smoke-test, beta-feature`. Note: additional selection criteria must also be met like application-id or environment-id, if supplied.
-- `uri` {string} (optional, DEPRECATED - use app_url) the base uri to run browser based tests against. If provided, this will
-  override the default uri associated with the environment in mabl
-- `app-url` {string} (optional) the base uri to run **Web Browser tests** against. If provided, this will
-  override the default web browser uri associated with the environment in mabl (note, this replaces `uri`, and will supersede the value in `uri` if both are provided)
-- `api-url` {string} (optional) the base uri to run **API tests** against. If provided, this will
-  override the default API uri associated with the environment in mabl
+- `uri` {string} (optional, DEPRECATED - use app_url) the base URL to run browser based tests against. If provided, this will
+  override the default URL associated with the environment in mabl
+- `app-url` {string} (optional) the base URL to run **Web Browser tests** against. If provided, this will
+  override the default web browser URL associated with the environment in mabl (note, this replaces `uri`, and will supersede the value in `uri` if both are provided)
+- `api-url` {string} (optional) the base URL to run **API tests** against. If provided, this will
+  override the default API URL associated with the environment in mabl
 - `mabl-branch` {string} (optional) run tests on the mabl branch of tests with this name. Defaults to `master`.
 - `http-headers` {string} (optional) Headers to add to all requests e.g. "My-Header:the-value" (comma or new line delimited).
 - `rebaseline-images` {boolean} (optional) - Set `true` to reset the visual
@@ -140,6 +143,10 @@ jobs:
   deployment.
 - `tests_failed` {int32} - number of mabl tests that failed against this
   deployment.
+
+**Note**: Metric outputs (`plans_run`, `plans_passed`, `plans_failed`,
+`tests_run`, `tests_passed`, `tests_failed`) are only available when
+`await-completion` is `true` (the default).
 
 
 ## Contributing

@@ -1,7 +1,8 @@
 'use strict'
 
-const { AsyncResource } = require('async_hooks')
-const { InvalidArgumentError, RequestAbortedError, SocketError } = require('../core/errors')
+const assert = require('node:assert')
+const { AsyncResource } = require('node:async_hooks')
+const { InvalidArgumentError, SocketError } = require('../core/errors')
 const util = require('../core/util')
 const { addSignal, removeSignal } = require('./abort-signal')
 
@@ -31,42 +32,48 @@ class ConnectHandler extends AsyncResource {
     addSignal(this, signal)
   }
 
-  onConnect (abort, context) {
-    if (!this.callback) {
-      throw new RequestAbortedError()
+  onRequestStart (controller, context) {
+    if (this.reason) {
+      controller.abort(this.reason)
+      return
     }
 
-    this.abort = abort
+    assert(this.callback)
+
+    this.abort = (reason) => controller.abort(reason)
     this.context = context
   }
 
-  onHeaders () {
+  onResponseStart () {
     throw new SocketError('bad connect', null)
   }
 
-  onUpgrade (statusCode, rawHeaders, socket) {
+  onRequestUpgrade (controller, statusCode, headers, socket) {
     const { callback, opaque, context } = this
 
     removeSignal(this)
 
     this.callback = null
 
-    let headers = rawHeaders
+    let responseHeaders = headers
+    const rawHeaders = controller?.rawHeaders
     // Indicates is an HTTP2Session
-    if (headers != null) {
-      headers = this.responseHeaders === 'raw' ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders)
+    if (responseHeaders != null) {
+      responseHeaders = this.responseHeaders === 'raw'
+        ? util.parseRawHeaders(rawHeaders)
+        : headers
     }
 
     this.runInAsyncScope(callback, null, null, {
       statusCode,
-      headers,
+      headers: responseHeaders,
       socket,
       opaque,
       context
     })
   }
 
-  onError (err) {
+  onResponseError (_controller, err) {
     const { callback, opaque } = this
 
     removeSignal(this)
@@ -91,12 +98,13 @@ function connect (opts, callback) {
 
   try {
     const connectHandler = new ConnectHandler(opts, callback)
-    this.dispatch({ ...opts, method: 'CONNECT' }, connectHandler)
+    const connectOptions = { ...opts, method: 'CONNECT' }
+    this.dispatch(connectOptions, connectHandler)
   } catch (err) {
     if (typeof callback !== 'function') {
       throw err
     }
-    const opaque = opts && opts.opaque
+    const opaque = opts?.opaque
     queueMicrotask(() => callback(err, { opaque }))
   }
 }

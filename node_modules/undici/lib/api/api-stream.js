@@ -1,15 +1,60 @@
 'use strict'
 
-const { finished, PassThrough } = require('stream')
-const {
-  InvalidArgumentError,
-  InvalidReturnValueError,
-  RequestAbortedError
-} = require('../core/errors')
+const assert = require('node:assert')
+const { AsyncResource } = require('node:async_hooks')
+const { InvalidArgumentError, InvalidReturnValueError } = require('../core/errors')
 const util = require('../core/util')
-const { getResolveErrorBodyCallback } = require('./util')
-const { AsyncResource } = require('async_hooks')
 const { addSignal, removeSignal } = require('./abort-signal')
+
+function noop () {}
+
+function getWritableError (stream) {
+  return stream.errored ?? stream.writableErrored ?? stream._writableState?.errored
+}
+
+function createPrematureCloseError () {
+  const err = new Error('Premature close')
+  err.code = 'ERR_STREAM_PREMATURE_CLOSE'
+  return err
+}
+
+function trackWritableLifecycle (stream, callback) {
+  let done = false
+
+  const cleanup = () => {
+    stream.removeListener('close', onClose)
+    stream.removeListener('error', onError)
+    stream.removeListener('finish', onFinish)
+  }
+
+  const finish = (err, fromErrorEvent = false) => {
+    if (done) {
+      return
+    }
+
+    done = true
+    cleanup()
+    callback(err, fromErrorEvent)
+  }
+
+  const onClose = () => {
+    const err = getWritableError(stream)
+    finish(err ?? (!stream.writableFinished ? createPrematureCloseError() : undefined))
+  }
+
+  const onError = (err) => finish(err, true)
+  const onFinish = () => finish()
+
+  stream.on('close', onClose)
+  stream.on('error', onError)
+  stream.on('finish', onFinish)
+
+  if (stream.closed) {
+    process.nextTick(onClose)
+  } else if (stream.writableFinished) {
+    process.nextTick(onFinish)
+  }
+}
 
 class StreamHandler extends AsyncResource {
   constructor (opts, factory, callback) {
@@ -17,7 +62,7 @@ class StreamHandler extends AsyncResource {
       throw new InvalidArgumentError('invalid opts')
     }
 
-    const { signal, method, opaque, body, onInfo, responseHeaders, throwOnError } = opts
+    const { signal, method, opaque, body, onInfo, responseHeaders } = opts
 
     try {
       if (typeof callback !== 'function') {
@@ -43,7 +88,7 @@ class StreamHandler extends AsyncResource {
       super('UNDICI_STREAM')
     } catch (err) {
       if (util.isStream(body)) {
-        util.destroy(body.on('error', util.nop), err)
+        util.destroy(body.on('error', noop), err)
       }
       throw err
     }
@@ -55,111 +100,112 @@ class StreamHandler extends AsyncResource {
     this.res = null
     this.abort = null
     this.context = null
+    this.controller = null
     this.trailers = null
     this.body = body
     this.onInfo = onInfo || null
-    this.throwOnError = throwOnError || false
 
     if (util.isStream(body)) {
       body.on('error', (err) => {
-        this.onError(err)
+        this.onResponseError(this.controller, err)
       })
     }
 
     addSignal(this, signal)
   }
 
-  onConnect (abort, context) {
-    if (!this.callback) {
-      throw new RequestAbortedError()
+  onRequestStart (controller, context) {
+    if (this.reason) {
+      controller.abort(this.reason)
+      return
     }
 
-    this.abort = abort
+    assert(this.callback)
+
+    this.controller = controller
+    this.abort = (reason) => controller.abort(reason)
     this.context = context
   }
 
-  onHeaders (statusCode, rawHeaders, resume, statusMessage) {
-    const { factory, opaque, context, callback, responseHeaders } = this
+  onResponseStart (controller, statusCode, headers, _statusMessage) {
+    const { factory, opaque, context, responseHeaders } = this
 
-    const headers = responseHeaders === 'raw' ? util.parseRawHeaders(rawHeaders) : util.parseHeaders(rawHeaders)
+    const rawHeaders = controller?.rawHeaders
+    const responseHeaderData = responseHeaders === 'raw'
+      ? util.parseRawHeaders(rawHeaders)
+      : headers
 
     if (statusCode < 200) {
       if (this.onInfo) {
-        this.onInfo({ statusCode, headers })
+        this.onInfo({ statusCode, headers: responseHeaderData })
       }
       return
     }
 
     this.factory = null
 
-    let res
-
-    if (this.throwOnError && statusCode >= 400) {
-      const parsedHeaders = responseHeaders === 'raw' ? util.parseHeaders(rawHeaders) : headers
-      const contentType = parsedHeaders['content-type']
-      res = new PassThrough()
-
-      this.callback = null
-      this.runInAsyncScope(getResolveErrorBodyCallback, null,
-        { callback, body: res, contentType, statusCode, statusMessage, headers }
-      )
-    } else {
-      if (factory === null) {
-        return
-      }
-
-      res = this.runInAsyncScope(factory, null, {
-        statusCode,
-        headers,
-        opaque,
-        context
-      })
-
-      if (
-        !res ||
-        typeof res.write !== 'function' ||
-        typeof res.end !== 'function' ||
-        typeof res.on !== 'function'
-      ) {
-        throw new InvalidReturnValueError('expected Writable')
-      }
-
-      // TODO: Avoid finished. It registers an unnecessary amount of listeners.
-      finished(res, { readable: false }, (err) => {
-        const { callback, res, opaque, trailers, abort } = this
-
-        this.res = null
-        if (err || !res.readable) {
-          util.destroy(res, err)
-        }
-
-        this.callback = null
-        this.runInAsyncScope(callback, null, err || null, { opaque, trailers })
-
-        if (err) {
-          abort()
-        }
-      })
+    if (factory === null) {
+      return
     }
 
-    res.on('drain', resume)
+    const res = this.runInAsyncScope(factory, null, {
+      statusCode,
+      headers: responseHeaderData,
+      opaque,
+      context
+    })
+
+    if (
+      !res ||
+      typeof res.write !== 'function' ||
+      typeof res.end !== 'function' ||
+      typeof res.on !== 'function'
+    ) {
+      throw new InvalidReturnValueError('expected Writable')
+    }
+
+    trackWritableLifecycle(res, (err, fromErrorEvent) => {
+      const { callback, res, opaque, trailers, abort } = this
+
+      this.res = null
+      if (err || !res?.readable) {
+        util.destroy(res, fromErrorEvent ? undefined : err)
+      }
+
+      this.callback = null
+      this.runInAsyncScope(callback, null, err || null, { opaque, trailers })
+
+      if (err) {
+        abort(err)
+      }
+    })
+
+    res.on('drain', () => controller.resume())
 
     this.res = res
 
     const needDrain = res.writableNeedDrain !== undefined
       ? res.writableNeedDrain
-      : res._writableState && res._writableState.needDrain
+      : res._writableState?.needDrain
 
-    return needDrain !== true
+    if (needDrain === true) {
+      controller.pause()
+    }
   }
 
-  onData (chunk) {
+  onResponseData (controller, chunk) {
     const { res } = this
 
-    return res ? res.write(chunk) : true
+    if (!res) {
+      return
+    }
+
+    if (res.write(chunk) === false) {
+      controller.pause()
+    }
   }
 
-  onComplete (trailers) {
+  onResponseEnd (_controller, trailers) {
     const { res } = this
 
     removeSignal(this)
@@ -168,12 +214,14 @@ class StreamHandler extends AsyncResource {
       return
     }
 
-    this.trailers = util.parseHeaders(trailers)
+    if (trailers && typeof trailers === 'object') {
+      this.trailers = trailers
+    }
 
     res.end()
   }
 
-  onError (err) {
+  onResponseError (_controller, err) {
     const { res, callback, opaque, body } = this
 
     removeSignal(this)
@@ -207,12 +255,14 @@ function stream (opts, factory, callback) {
   }
 
   try {
-    this.dispatch(opts, new StreamHandler(opts, factory, callback))
+    const handler = new StreamHandler(opts, factory, callback)
+
+    this.dispatch(opts, handler)
   } catch (err) {
     if (typeof callback !== 'function') {
       throw err
     }
-    const opaque = opts && opts.opaque
+    const opaque = opts?.opaque
     queueMicrotask(() => callback(err, { opaque }))
   }
 }

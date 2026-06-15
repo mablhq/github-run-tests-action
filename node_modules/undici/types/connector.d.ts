@@ -1,5 +1,5 @@
-import { TLSSocket, ConnectionOptions } from 'tls'
-import { IpcNetConnectOpts, Socket, TcpNetConnectOpts } from 'net'
+import { TLSSocket, ConnectionOptions } from 'node:tls'
+import { IpcNetConnectOpts, Socket, TcpNetConnectOpts } from 'node:net'
 
 export default buildConnector
 declare function buildConnector (options?: buildConnector.BuildOptions): buildConnector.connector
@@ -7,12 +7,14 @@ declare function buildConnector (options?: buildConnector.BuildOptions): buildCo
 declare namespace buildConnector {
   export type BuildOptions = (ConnectionOptions | TcpNetConnectOpts | IpcNetConnectOpts) & {
     allowH2?: boolean;
+    preferH2?: boolean;
     maxCachedSessions?: number | null;
     socketPath?: string | null;
     timeout?: number | null;
     port?: number;
     keepAlive?: boolean | null;
     keepAliveInitialDelay?: number | null;
+    typeOfService?: number | null;
   }
 
   export interface Options {
@@ -22,6 +24,7 @@ declare namespace buildConnector {
     port: string
     servername?: string
     localAddress?: string | null
+    socketPath?: string | null
     httpSocket?: Socket
   }
 

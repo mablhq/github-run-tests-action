@@ -1,10 +1,10 @@
 import retry from 'async-retry';
-import {Application} from './entities/Application';
-import {Deployment, DeploymentProperties} from './entities/Deployment';
-import {ExecutionResult} from './entities/ExecutionResult';
+import {Application} from './entities/Application.js';
+import {Deployment, DeploymentProperties} from './entities/Deployment.js';
+import {ExecutionResult} from './entities/ExecutionResult.js';
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
-import {Environment} from './entities/Environment';
-import {USER_AGENT} from './constants';
+import {Environment} from './entities/Environment.js';
+import {USER_AGENT} from './constants.js';
 
 const GET_REQUEST_TIMEOUT_MILLIS = 600_000;
 const POST_REQUEST_TIMEOUT_MILLIS = 900_000;
