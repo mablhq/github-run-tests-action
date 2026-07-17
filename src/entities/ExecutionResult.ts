@@ -57,8 +57,15 @@ interface JourneyExecution {
   app_href: string;
 }
 
+interface EventStatus {
+  succeeded?: boolean;
+  succeeded_first_attempt?: boolean;
+  succeeded_with_retries?: boolean;
+}
+
 export interface ExecutionResult {
   plan_execution_metrics: PlanExecutionMetrics;
   journey_execution_metrics: JourneyExecutionMetrics;
   executions: Execution[];
+  event_status?: EventStatus;
 }

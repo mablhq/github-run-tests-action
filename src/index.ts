@@ -255,16 +255,26 @@ export async function run(enableFailureExitCodes = true): Promise<void> {
       '' + finalExecutionResult.journey_execution_metrics.failed,
     );
 
-    if (finalExecutionResult.journey_execution_metrics.failed === 0) {
+    // journey_execution_metrics counts every attempt, so a test that failed
+    // initially but passed on an automatic rerun still counts as failed.
+    // event_status.succeeded reflects the final outcome across retries, so
+    // prefer it when the API provides it.
+    const failedCount = finalExecutionResult.journey_execution_metrics.failed;
+    const deploymentSucceeded =
+      finalExecutionResult.event_status?.succeeded ?? failedCount === 0;
+    if (deploymentSucceeded) {
+      if (failedCount > 0) {
+        core.info(
+          `${failedCount} mabl test run(s) failed initially but the deployment succeeded after automatic reruns`,
+        );
+      }
       core.debug('Deployment plans passed');
     } else if (continueOnPlanFailure) {
       core.warning(
-        `There were ${finalExecutionResult.journey_execution_metrics.failed} test failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
+        `There were ${failedCount} test failures but the continueOnPlanFailure flag is set so the task has been marked as passing`,
       );
     } else {
-      wrappedFailed(
-        `${finalExecutionResult.journey_execution_metrics.failed} mabl test(s) failed`,
-      );
+      wrappedFailed(`${failedCount} mabl test(s) failed`);
     }
     core.endGroup();
   } catch (err) {
